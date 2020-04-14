@@ -2,6 +2,7 @@ import 'module-alias/register';
 import express from 'express';
 
 import './compiler';
+import { renderPage } from './renderer';
 
 async function bootstrap() {
   const port = Number(process.env.PORT) || 9000;
@@ -10,8 +11,14 @@ async function bootstrap() {
     console.log(`🚀 Server running on http://0.0.0.0:${port}`),
   );
 
-  app.get('*', (req) => {
-    console.log(req.url);
+  app.get('*', (req, res) => {
+    const markup = renderPage(req.url);
+    if (markup === null) {
+      // TODO: Render static assets
+      res.status(404).send('Not found');
+      return;
+    }
+    res.send(markup);
   });
 
   process.on('SIGINT', () => {
