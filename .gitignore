@@ -4,3 +4,5 @@ prod/
 .vscode/
 
 .env
+
+.nicessr/
