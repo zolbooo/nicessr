@@ -2,16 +2,10 @@ import 'module-alias/register';
 import path from 'path';
 import express from 'express';
 
-import './compiler';
+import { resolveURL } from './util';
 import { renderPage } from './renderer';
 import { compiledPages } from './compiler';
 import { unsubscribe, subscribeForPageUpdates } from './auto-reload';
-
-function resolveURL(url: string) {
-  if (url.endsWith('/')) return url + 'index';
-  if (compiledPages.has(url)) return url;
-  return url + '/index';
-}
 
 async function bootstrap() {
   const port = Number(process.env.PORT) || 9000;

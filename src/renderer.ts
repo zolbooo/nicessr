@@ -1,10 +1,9 @@
+import { resolveURL } from './util';
 import { compiledPages } from './compiler';
 import { renderToString } from './ssr';
 
 function getPageEntrypoint(url: string): string[] | null {
-  if (url[url.length - 1] === '/')
-    return compiledPages.get(url + 'index') ?? null;
-  return (compiledPages.get(url) || compiledPages.get(`${url}/index`)) ?? null;
+  return compiledPages.get(resolveURL(url)) ?? null;
 }
 
 const pageTemplate = `<!DOCTYPE html>
@@ -40,5 +39,8 @@ export async function renderPage(url: string): Promise<string | null> {
         .map((entrypoint) => `<script src="/.nicessr/${entrypoint}"></script>`)
         .join('\n'),
     )
-    .replace('{{RENDERED_MARKUP}}', await renderToString(pageEntrypoint));
+    .replace(
+      '{{RENDERED_MARKUP}}',
+      await renderToString({ page: url, entrypoint: pageEntrypoint }),
+    );
 }
