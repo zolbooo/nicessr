@@ -12,7 +12,7 @@ export type PageBundleInfo = {
 
 export function renderFiber(fiber: FiberNode | FiberNode[]): string {
   if (Array.isArray(fiber)) return fiber.map(renderFiber).join('');
-  if (typeof fiber !== 'object') return fiber.toString();
+  if (typeof fiber !== 'object') return escape(fiber.toString());
 
   if (fiber.elementName === 'Text') {
     return escape(fiber.props.children[0]);
