@@ -16,17 +16,21 @@ export async function renderToString({
     console: {},
     document: {},
   });
-  for (let entrypointPath of entrypoint) {
-    await fileEval(
-      path.join(process.cwd(), '.nicessr', 'build', entrypointPath),
-      { context: pageContext },
-    );
-  }
+  try {
+    for (let entrypointPath of entrypoint) {
+      await fileEval(
+        path.join(process.cwd(), '.nicessr', 'build', entrypointPath),
+        { context: pageContext },
+      );
+    }
 
-  if (typeof pageContext.window.default !== 'function') {
-    console.error(`⛔️ Cannot render page ${page}: check default export`);
-    return 'Error while SSR';
-  }
+    if (typeof pageContext.window.default !== 'function') {
+      throw Error(`Cannot render page ${page}: check default export`);
+    }
 
-  return vm.runInContext('window.default()', pageContext);
+    return vm.runInContext('window.default()', pageContext);
+  } catch (err) {
+    console.error(`⛔️ ${err.message}`);
+    return 'Cannot render page: check console for errors';
+  }
 }
