@@ -26,10 +26,7 @@ export async function renderEntrypoint({
   page,
   entrypoint,
 }: PageBundleInfo): Promise<Fiber> {
-  const pageContext = vm.createContext({
-    window: {},
-    document: {},
-  });
+  const pageContext = vm.createContext({ window: {} });
   try {
     for (let entrypointPath of entrypoint) {
       await fileEval(
