@@ -3,7 +3,7 @@ import path from 'path';
 import express from 'express';
 
 import { resolveURL } from './util';
-import { renderPage } from './renderer';
+import { renderPage } from './ssr/renderer';
 import { compiledPages } from './compiler';
 import { unsubscribe, subscribeForPageUpdates } from './auto-reload';
 

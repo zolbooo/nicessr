@@ -1,8 +1,8 @@
 import flatted from 'flatted';
 
-import { resolveURL } from './util';
-import { compiledPages } from './compiler';
-import { renderEntrypoint, renderFiber } from './ssr';
+import { resolveURL } from '../util';
+import { compiledPages } from '../compiler';
+import { renderEntrypoint, renderFiber } from '.';
 
 function getPageEntrypoint(url: string): string[] | null {
   return compiledPages.get(resolveURL(url)) ?? null;
