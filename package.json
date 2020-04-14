@@ -1,0 +1,47 @@
+{
+  "name": "nodejs-ts-project",
+  "version": "1.0.0",
+  "description": "",
+  "main": "prod/index.js",
+  "scripts": {
+    "build": "npx tsc",
+    "start": "node prod/index.js",
+    "test": "npx jest",
+    "dev": "npx tsc-watch --onSuccess 'npm start'"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/zolbooo/nodejs-ts-boilerplate.git"
+  },
+  "keywords": [
+    "nodejs",
+    "typescript",
+    "boilerplate",
+    "eslint"
+  ],
+  "prettier": {
+    "semi": true,
+    "singleQuote": true,
+    "trailingComma": "all"
+  },
+  "author": "Zolboobayar Gantumur <zolboobayar@nhs.edu.mn>",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/zolbooo/nodejs-ts-boilerplate/issues"
+  },
+  "homepage": "https://github.com/zolbooo/nodejs-ts-boilerplate#readme",
+  "devDependencies": {
+    "@nicepack/eslint-ts": "^1.2.3",
+    "@types/node": "^13.9.8",
+    "eslint": "^6.8.0",
+    "prettier": "^2.0.2",
+    "tsc-watch": "^4.2.3",
+    "typescript": "^3.8.3"
+  },
+  "dependencies": {
+    "module-alias": "^2.2.2"
+  },
+  "_moduleAliases": {
+    "@": "prod"
+  }
+}
