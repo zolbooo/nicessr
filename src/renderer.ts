@@ -1,6 +1,8 @@
+import flatted from 'flatted';
+
 import { resolveURL } from './util';
 import { compiledPages } from './compiler';
-import { renderToString } from './ssr';
+import { renderEntrypoint, renderFiber } from './ssr';
 
 function getPageEntrypoint(url: string): string[] | null {
   return compiledPages.get(resolveURL(url)) ?? null;
@@ -11,6 +13,7 @@ const pageTemplate = `<!DOCTYPE html>
   <head></head>
   <body>
     {{RENDERED_MARKUP}}
+    <script>window.__nicessr__vdom__ = '{{RENDERED_VDOM}}'</script>
     {{ENTRYPOINTS}}
     <script>
       new EventSource(
@@ -32,6 +35,12 @@ export async function renderPage(url: string): Promise<string | null> {
   if (!pageEntrypoint) {
     return null;
   }
+
+  const renderedTree = await renderEntrypoint({
+    page: url,
+    entrypoint: pageEntrypoint,
+  });
+
   return pageTemplate
     .replace(
       '{{ENTRYPOINTS}}',
@@ -39,8 +48,9 @@ export async function renderPage(url: string): Promise<string | null> {
         .map((entrypoint) => `<script src="/.nicessr/${entrypoint}"></script>`)
         .join('\n'),
     )
+    .replace('{{RENDERED_VDOM}}', flatted.stringify(renderedTree))
     .replace(
       '{{RENDERED_MARKUP}}',
-      await renderToString({ page: url, entrypoint: pageEntrypoint }),
+      renderedTree ? renderFiber(renderedTree) : '',
     );
 }

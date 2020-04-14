@@ -22,10 +22,10 @@ export function renderFiber(fiber: Fiber): string {
     .join('')}</${fiber.elementName}>`;
 }
 
-export async function renderToString({
+export async function renderEntrypoint({
   page,
   entrypoint,
-}: PageBundleInfo): Promise<string> {
+}: PageBundleInfo): Promise<Fiber> {
   const pageContext = vm.createContext({
     window: {},
     document: {},
@@ -46,10 +46,10 @@ export async function renderToString({
     if (!isFiber(result)) {
       throw Error(`Expected fiber to be rendered, got ${result.toString()}`);
     }
-    return renderFiber(result);
+    return result;
   } catch (err) {
     console.error(`⛔️ ${err.message}`);
     console.error(err.stack);
-    return 'Cannot render page: check console for errors';
+    return null;
   }
 }
