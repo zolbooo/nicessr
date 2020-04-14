@@ -1,6 +1,8 @@
 import 'module-alias/register';
 import express from 'express';
 
+import './compiler';
+
 async function bootstrap() {
   const port = Number(process.env.PORT) || 9000;
   const app = express();
