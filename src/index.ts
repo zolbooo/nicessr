@@ -5,7 +5,7 @@ import express from 'express';
 import { resolveURL } from './util';
 import { renderPage } from './ssr/renderer';
 import { compiledPages } from './ssr/compiler';
-import { unsubscribe, subscribeForPageUpdates } from './auto-reload';
+import { unsubscribe, subscribeForPageUpdates } from './ssr/auto-reload';
 
 async function bootstrap() {
   const port = Number(process.env.PORT) || 9000;
