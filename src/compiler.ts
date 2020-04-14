@@ -23,9 +23,13 @@ const compiler = webpack({
   mode: 'development',
   entry: getEntrypoints,
   watch: true,
+  devtool: 'source-map',
   output: {
     path: path.join(process.cwd(), '.nicessr', 'build'),
     filename: '[chunkhash].js',
+  },
+  optimization: {
+    runtimeChunk: 'single',
   },
 }).watch({}, (err, stats) => {
   if (err) {
@@ -35,8 +39,12 @@ const compiler = webpack({
 
   const chunks = Array.from(stats.compilation.chunks.values());
   chunks.forEach((chunk) => {
-    console.log(`⚡️ Built page ${chunk.id}`);
-    compiledPages.set(chunk.id, chunk.renderedHash + '.js');
+    if (chunk.id.startsWith('/')) {
+      console.log(`⚡️ Built page ${chunk.id}`);
+      compiledPages.set(chunk.id, chunk.renderedHash + '.js');
+    } else if (chunk.id === 'runtime') {
+      compiledPages.set('runtime', chunk.renderedHash + '.js');
+    } else console.log(`❓Unknown chunk: ${chunk.id}`);
   });
 });
 

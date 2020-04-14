@@ -11,6 +11,7 @@ const pageTemplate = (entrypoint: string) => `<!doctype html>
 <head>
 </head>
 <body>
+  <script src="/.nicessr/${compiledPages.get('runtime')}"></script>
   <script module src="/.nicessr/${entrypoint}"></script>
 </body>
 </html>`;
