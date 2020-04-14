@@ -13,7 +13,7 @@ export function useAutoReload() {
   eventSource.addEventListener('error', () => {
     eventSource.removeEventListener('message', updateHandler);
     eventSource.close();
-    useAutoReload();
+    setTimeout(useAutoReload, 500);
   });
 }
 
