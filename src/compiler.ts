@@ -6,7 +6,7 @@ function getPagePath(fsPath: string) {
   return fsPath.slice('src/pages'.length).split('.').slice(0, -1).join('.');
 }
 
-export const compiledPages = new Map<string, string>();
+export const compiledPages = new Map<string, string[]>();
 
 const pages: Set<string> = new Set();
 function getEntrypoints() {
@@ -31,20 +31,19 @@ const compiler = webpack({
   optimization: {
     runtimeChunk: 'single',
   },
-}).watch({}, (err, stats) => {
+});
+const watcher = compiler.watch({}, (err, stats) => {
   if (err) {
     console.error(`⛔️ ${err.message}`);
     return;
   }
 
-  const chunks = Array.from(stats.compilation.chunks.values());
-  chunks.forEach((chunk) => {
-    if (chunk.id.startsWith('/')) {
-      console.log(`⚡️ Built page ${chunk.id}`);
-      compiledPages.set(chunk.id, chunk.renderedHash + '.js');
-    } else if (chunk.id === 'runtime') {
-      compiledPages.set('runtime', chunk.renderedHash + '.js');
-    } else console.log(`❓Unknown chunk: ${chunk.id}`);
+  const entrypoints = Array.from(stats.compilation.entrypoints.entries());
+  entrypoints.forEach(([pageName, entrypoint]) => {
+    compiledPages.set(
+      pageName,
+      entrypoint.chunks.map((chunk) => Array.from(chunk.files.values())).flat(),
+    );
   });
 });
 
@@ -52,11 +51,13 @@ const pagesWatcher = chokidar
   .watch('./src/pages')
   .on('add', (path) => {
     pages.add(path);
-    compiler.invalidate();
+    watcher.invalidate();
   })
   .on('unlink', (path) => pages.delete(path));
 
 process.on('SIGINT', () => {
   pagesWatcher.close();
-  compiler.close(() => {});
+  watcher.close(() => {});
 });
+
+export default compiler;

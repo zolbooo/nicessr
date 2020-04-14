@@ -1,20 +1,15 @@
 import { compiledPages } from './compiler';
 
-function getPageEntrypoint(url: string): string | null {
+function getPageEntrypoint(url: string): string[] | null {
   if (url[url.length - 1] === '/')
     return compiledPages.get(url + 'index') ?? null;
   return (compiledPages.get(url) || compiledPages.get(`${url}/index`)) ?? null;
 }
 
-const pageTemplate = (entrypoint: string) => `<!doctype html>
-<html>
-<head>
-</head>
-<body>
-  <script src="/.nicessr/${compiledPages.get('runtime')}"></script>
-  <script module src="/.nicessr/${entrypoint}"></script>
-</body>
-</html>`;
+const pageTemplate = (entrypoint: string[]) =>
+  `<!doctype html><html><head></head><body>${entrypoint
+    .map((file) => `<script src="/.nicessr/${file}"></script>`)
+    .join('')}</body></html>`;
 
 export function renderPage(url: string): string | null {
   const pageEntrypoint = getPageEntrypoint(url);
