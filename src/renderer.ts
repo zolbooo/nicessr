@@ -6,15 +6,35 @@ function getPageEntrypoint(url: string): string[] | null {
   return (compiledPages.get(url) || compiledPages.get(`${url}/index`)) ?? null;
 }
 
-const pageTemplate = (entrypoint: string[]) =>
-  `<!doctype html><html><head></head><body>${entrypoint
-    .map((file) => `<script src="/.nicessr/${file}"></script>`)
-    .join('')}</body></html>`;
+const pageTemplate = `<!DOCTYPE html>
+<html>
+  <head></head>
+  <body>
+    {{ENTRYPOINTS}}
+    <script>
+      new EventSource(
+        '/.nicessr/auto-refresh?page=' +
+          encodeURIComponent(document.location.pathname),
+      ).addEventListener(
+        'message',
+        (event) =>
+          JSON.parse(event.data).type === 'update' &&
+          document.location.reload(),
+        false,
+      );
+    </script>
+  </body>
+</html>`;
 
 export function renderPage(url: string): string | null {
   const pageEntrypoint = getPageEntrypoint(url);
   if (!pageEntrypoint) {
     return null;
   }
-  return pageTemplate(pageEntrypoint);
+  return pageTemplate.replace(
+    '{{ENTRYPOINTS}}',
+    pageEntrypoint
+      .map((entrypoint) => `<script src="/.nicessr/${entrypoint}"></script>`)
+      .join('\n'),
+  );
 }

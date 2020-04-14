@@ -2,6 +2,7 @@ import path from 'path';
 import webpack from 'webpack';
 import chokidar from 'chokidar';
 import { CleanWebpackPlugin } from 'clean-webpack-plugin';
+import { pushPageUpdate } from './auto-reload';
 
 function getPagePath(fsPath: string) {
   return fsPath.slice('src/pages'.length).split('.').slice(0, -1).join('.');
@@ -62,6 +63,7 @@ const watcher = compiler.watch({}, (err, stats) => {
       pageName,
       entrypoint.chunks.map((chunk) => Array.from(chunk.files.values())).flat(),
     );
+    pushPageUpdate(pageName);
   });
 });
 

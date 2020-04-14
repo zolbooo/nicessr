@@ -4,6 +4,14 @@ import express from 'express';
 
 import './compiler';
 import { renderPage } from './renderer';
+import { compiledPages } from './compiler';
+import { unsubscribe, subscribeForPageUpdates } from './auto-reload';
+
+function resolveURL(url: string) {
+  if (url.endsWith('/')) return url + 'index';
+  if (compiledPages.has(url)) return url;
+  return url + '/index';
+}
 
 async function bootstrap() {
   const port = Number(process.env.PORT) || 9000;
@@ -12,6 +20,24 @@ async function bootstrap() {
     console.log(`🚀 Server running on http://0.0.0.0:${port}`),
   );
 
+  app.use('/.nicessr/auto-refresh', (req, res) => {
+    const page = resolveURL(req.query.page.toString());
+    if (!compiledPages.get(page)) {
+      res.status(404).send('Page not found');
+      return;
+    }
+
+    res.socket.setTimeout(1000 * 60 * 60 * 24);
+    res.writeHead(200, {
+      'Content-Type': 'text/event-stream',
+      'Cache-Control': 'no-cache',
+      Connection: 'keep-alive',
+    });
+    res.write('\n');
+
+    subscribeForPageUpdates(page, res);
+    req.on('close', () => unsubscribe(page, res));
+  });
   app.use(
     '/.nicessr',
     express.static(path.join(process.cwd(), '.nicessr', 'build')),
