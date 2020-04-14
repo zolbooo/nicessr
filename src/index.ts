@@ -1,4 +1,5 @@
 import 'module-alias/register';
+import path from 'path';
 import express from 'express';
 
 import './compiler';
@@ -11,15 +12,19 @@ async function bootstrap() {
     console.log(`🚀 Server running on http://0.0.0.0:${port}`),
   );
 
-  app.get('*', (req, res) => {
+  app.use(
+    '/.nicessr',
+    express.static(path.join(process.cwd(), '.nicessr', 'build')),
+  );
+  app.get('*', (req, res, next) => {
     const markup = renderPage(req.url);
     if (markup === null) {
-      // TODO: Render static assets
-      res.status(404).send('Not found');
+      next();
       return;
     }
     res.send(markup);
   });
+  app.use(express.static(path.join(process.cwd(), 'public')));
 
   process.on('SIGINT', () => {
     console.log('\n👾 Exiting gracefully, please wait...');
