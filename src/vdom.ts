@@ -71,6 +71,10 @@ export function h<P = FiberProps>(
       `Invariant violation: expected lowercase string as element name, got ${element.toString()}`,
     );
 
+  if (element === 'script') {
+    throw Error('<script> tag is prohibited');
+  }
+
   const fiber: Fiber = {
     __fiber,
     props: props ?? {},
