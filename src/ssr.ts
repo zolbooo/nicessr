@@ -3,7 +3,7 @@ import path from 'path';
 import escape from 'escape-html';
 import fileEval from 'file-eval';
 
-import { Fiber, isFiber, FiberNode } from './vdom';
+import { Fiber, isFiber, FiberNode } from './jsx/vdom';
 
 export type PageBundleInfo = {
   page: string;
