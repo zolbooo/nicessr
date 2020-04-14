@@ -10,12 +10,15 @@ export type PageBundleInfo = {
   entrypoint: string[];
 };
 
-export function renderFiber(fiber: Fiber): string {
+export function renderFiber(fiber: FiberNode | FiberNode[]): string {
+  if (Array.isArray(fiber)) return fiber.map(renderFiber).join('');
+  if (typeof fiber !== 'object') return fiber.toString();
+
   if (fiber.elementName === 'Text') {
     return escape(fiber.props.children[0]);
   }
   if (fiber.elementName === 'Fragment') {
-    return (fiber.props.children as FiberNode[]).map(renderFiber).join('');
+    return (fiber.props.children as Fiber[]).map(renderFiber).join('');
   }
   return `<${fiber.elementName}>${(fiber.props.children as FiberNode[])
     .map(renderFiber)

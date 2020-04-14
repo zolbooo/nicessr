@@ -37,10 +37,12 @@ export async function renderPage(url: string): Promise<string | null> {
     return null;
   }
 
-  const renderedTree = await renderEntrypoint({
-    page: url,
-    entrypoint: pageEntrypoint,
-  });
+  const renderedTree = flattenFragments(
+    await renderEntrypoint({
+      page: url,
+      entrypoint: pageEntrypoint,
+    }),
+  );
 
   return pageTemplate
     .replace(
@@ -49,10 +51,7 @@ export async function renderPage(url: string): Promise<string | null> {
         .map((entrypoint) => `<script src="/.nicessr/${entrypoint}"></script>`)
         .join('\n'),
     )
-    .replace(
-      '{{RENDERED_VDOM}}',
-      flatted.stringify(flattenFragments(renderedTree)),
-    )
+    .replace('{{RENDERED_VDOM}}', flatted.stringify(renderedTree))
     .replace(
       '{{RENDERED_MARKUP}}',
       renderedTree ? renderFiber(renderedTree) : '',
