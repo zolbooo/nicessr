@@ -13,18 +13,6 @@ const pageTemplate = `<!DOCTYPE html>
   <body>
     <div id="__nicessr__root__">{{RENDERED_MARKUP}}</div>
     {{ENTRYPOINTS}}
-    <script>
-      new EventSource(
-        '/.nicessr/auto-refresh?page=' +
-          encodeURIComponent(document.location.pathname),
-      ).addEventListener(
-        'message',
-        (event) =>
-          JSON.parse(event.data).type === 'update' &&
-          document.location.reload(),
-        false,
-      );
-    </script>
   </body>
 </html>`;
 
