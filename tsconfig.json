@@ -4,28 +4,18 @@
     "esModuleInterop": true,
     "resolveJsonModule": true,
     "paths": {
-      "@/*": [
-        "src/*"
-      ]
+      "@/*": ["src/*"]
     },
     "target": "es5",
-    "lib": [
-      "esnext"
-    ],
+    "lib": ["esnext", "DOM"],
     "outDir": "prod",
     "strict": false,
     "module": "CommonJS",
     "skipLibCheck": true,
     "moduleResolution": "node",
     "allowSyntheticDefaultImports": true,
-    "forceConsistentCasingInFileNames": true,
+    "forceConsistentCasingInFileNames": true
   },
-  "exclude": [
-    "node_modules",
-    "./src/pages"
-  ],
-  "include": [
-    "src/**/*.ts",
-  ]
+  "exclude": ["node_modules", "./src/pages"],
+  "include": ["src/**/*.ts"]
 }
-
