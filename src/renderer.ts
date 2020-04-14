@@ -6,6 +6,19 @@ function getPageEntrypoint(url: string): string | null {
   return (compiledPages.get(url) || compiledPages.get(`${url}/index`)) ?? null;
 }
 
-export function renderPage(url: string): string|null {
-  return getPageEntrypoint(url);
+const pageTemplate = (entrypoint: string) => `<!doctype html>
+<html>
+<head>
+</head>
+<body>
+  <script module src="/.nicessr/${entrypoint}"></script>
+</body>
+</html>`;
+
+export function renderPage(url: string): string | null {
+  const pageEntrypoint = getPageEntrypoint(url);
+  if (!pageEntrypoint) {
+    return null;
+  }
+  return pageTemplate(pageEntrypoint);
 }
