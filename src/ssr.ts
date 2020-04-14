@@ -43,7 +43,10 @@ export async function renderToString({
     }
 
     const result = vm.runInContext('window.default()', pageContext);
-    return isFiber(result) ? renderFiber(result) : result;
+    if (!isFiber(result)) {
+      throw Error(`Expected fiber to be rendered, got ${result.toString()}`);
+    }
+    return renderFiber(result);
   } catch (err) {
     console.error(`⛔️ ${err.message}`);
     console.error(err.stack);
