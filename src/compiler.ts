@@ -8,6 +8,11 @@ function getPagePath(fsPath: string) {
   return fsPath.slice('src/pages'.length).split('.').slice(0, -1).join('.');
 }
 
+function hasUpdated(oldEntrypoint: string[], newEntrypoint: string[]) {
+  if (oldEntrypoint?.length !== newEntrypoint?.length) return true;
+  return oldEntrypoint.some((entrypoint, i) => entrypoint !== newEntrypoint[i]);
+}
+
 export const compiledPages = new Map<string, string[]>();
 
 const pages: Set<string> = new Set();
@@ -59,11 +64,14 @@ const watcher = compiler.watch({}, (err, stats) => {
 
   const entrypoints = Array.from(stats.compilation.entrypoints.entries());
   entrypoints.forEach(([pageName, entrypoint]) => {
+    const newEntrypoint = entrypoint.chunks
+      .map((chunk) => Array.from(chunk.files.values()))
+      .flat();
+    const oldEntrypoint = compiledPages.get(pageName);
+    if (!hasUpdated(oldEntrypoint, newEntrypoint)) return;
+
     console.log(`⚡️ Built page ${pageName}`);
-    compiledPages.set(
-      pageName,
-      entrypoint.chunks.map((chunk) => Array.from(chunk.files.values())).flat(),
-    );
+    compiledPages.set(pageName, newEntrypoint);
     pushPageUpdate(pageName);
   });
 });
