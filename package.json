@@ -1,7 +1,7 @@
 {
-  "name": "nodejs-ts-project",
+  "name": "nicessr",
   "version": "1.0.0",
-  "description": "",
+  "description": "ES6-based simple framework for SSR",
   "main": "prod/index.js",
   "scripts": {
     "build": "npx tsc",
@@ -11,7 +11,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/zolbooo/nodejs-ts-boilerplate.git"
+    "url": "git+https://github.com/zolbooo/nicessr.git"
   },
   "keywords": [
     "nodejs",
@@ -27,14 +27,14 @@
   "author": "Zolboobayar Gantumur <zolboobayar@nhs.edu.mn>",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/zolbooo/nodejs-ts-boilerplate/issues"
+    "url": "https://github.com/zolbooo/nicessr/issues"
   },
-  "homepage": "https://github.com/zolbooo/nodejs-ts-boilerplate#readme",
+  "homepage": "https://github.com/zolbooo/nicessr#readme",
   "devDependencies": {
     "@nicepack/eslint-ts": "^1.2.3",
-    "@types/node": "^13.9.8",
+    "@types/node": "^13.11.1",
     "eslint": "^6.8.0",
-    "prettier": "^2.0.2",
+    "prettier": "^2.0.4",
     "tsc-watch": "^4.2.3",
     "typescript": "^3.8.3"
   },
