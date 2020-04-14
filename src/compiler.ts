@@ -29,6 +29,20 @@ const compiler = webpack({
     path: path.join(process.cwd(), '.nicessr', 'build'),
     filename: '[chunkhash].js',
   },
+  module: {
+    rules: [
+      {
+        test: /\.m?js$/,
+        exclude: /node_modules/,
+        use: {
+          loader: 'babel-loader',
+          options: {
+            presets: ['@babel/preset-env'],
+          },
+        },
+      },
+    ],
+  },
   optimization: {
     splitChunks: { chunks: 'all' },
     runtimeChunk: 'single',
