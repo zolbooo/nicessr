@@ -6,10 +6,7 @@ function getPagePath(fsPath: string) {
   return fsPath.slice('src/pages'.length).split('.').slice(0, -1).join('.');
 }
 
-const resolveExtensions = ['.js', '.jsx', '.ts', '.tsx'];
-export async function requestPage(url: string): Promise<string> {
-  return url;
-}
+export const compiledPages = new Map<string, string>();
 
 const pages: Set<string> = new Set();
 function getEntrypoints() {
@@ -35,7 +32,12 @@ const compiler = webpack({
     console.error(`⛔️ ${err.message}`);
     return;
   }
-  console.log(stats.toString({ colors: true }));
+
+  const chunks = Array.from(stats.compilation.chunks.values());
+  chunks.forEach((chunk) => {
+    console.log(`⚡️ Built page ${chunk.id}`);
+    compiledPages.set(chunk.id, chunk.renderedHash + '.js');
+  });
 });
 
 const pagesWatcher = chokidar
