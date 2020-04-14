@@ -5,7 +5,7 @@ export const jsxs = h;
 export const Fragment = 'Fragment';
 
 export function flattenFragments(root: Fiber): Fiber | Fiber[] {
-  if (root.elementName === 'Text') return root;
+  if (root.elementName === '#text') return root;
   if (root.elementName === 'Fragment')
     return (root.props.children as Fiber[])
       .map((child) => ({ ...child, parent: root.parent }))

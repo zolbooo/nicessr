@@ -10,7 +10,7 @@ export type Fiber = {
   __fiber: typeof __fiber;
   props: FiberProps;
   parent: Fiber | null;
-  elementName: 'Text' | 'Fragment' | string;
+  elementName: '#text' | 'Fragment' | string;
 };
 
 export function isFiber(node: FiberNode) {
@@ -29,7 +29,7 @@ function toFiber(node: FiberNode, parent: Fiber | null): Fiber {
       props: {
         children: [node.toString()],
       },
-      elementName: 'Text',
+      elementName: '#text',
     };
   }
 

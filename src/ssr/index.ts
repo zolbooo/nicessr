@@ -14,7 +14,7 @@ export function renderFiber(fiber: FiberNode | FiberNode[]): string {
   if (Array.isArray(fiber)) return fiber.map(renderFiber).join('');
   if (typeof fiber !== 'object') return escape(fiber.toString());
 
-  if (fiber.elementName === 'Text') {
+  if (fiber.elementName === '#text') {
     return escape(fiber.props.children[0]);
   }
   if (fiber.elementName === 'Fragment') {
