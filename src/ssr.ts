@@ -31,6 +31,7 @@ export async function renderToString({
     return vm.runInContext('window.default()', pageContext);
   } catch (err) {
     console.error(`⛔️ ${err.message}`);
+    console.error(err.stack);
     return 'Cannot render page: check console for errors';
   }
 }
