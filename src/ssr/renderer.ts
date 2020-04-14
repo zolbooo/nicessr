@@ -3,6 +3,7 @@ import flatted from 'flatted';
 import { resolveURL } from '../util';
 import { compiledPages } from '../compiler';
 import { renderEntrypoint, renderFiber } from '.';
+import { flattenFragments } from '@/jsx/jsx-runtime';
 
 function getPageEntrypoint(url: string): string[] | null {
   return compiledPages.get(resolveURL(url)) ?? null;
@@ -12,7 +13,7 @@ const pageTemplate = `<!DOCTYPE html>
 <html>
   <head></head>
   <body>
-    {{RENDERED_MARKUP}}
+    <div id="__nicessr__root__">{{RENDERED_MARKUP}}</div>
     <script>window.__nicessr__vdom__ = '{{RENDERED_VDOM}}'</script>
     {{ENTRYPOINTS}}
     <script>
@@ -48,7 +49,10 @@ export async function renderPage(url: string): Promise<string | null> {
         .map((entrypoint) => `<script src="/.nicessr/${entrypoint}"></script>`)
         .join('\n'),
     )
-    .replace('{{RENDERED_VDOM}}', flatted.stringify(renderedTree))
+    .replace(
+      '{{RENDERED_VDOM}}',
+      flatted.stringify(flattenFragments(renderedTree)),
+    )
     .replace(
       '{{RENDERED_MARKUP}}',
       renderedTree ? renderFiber(renderedTree) : '',
