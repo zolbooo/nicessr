@@ -1,5 +1,6 @@
 import vm from 'vm';
 import path from 'path';
+import fetch from 'node-fetch';
 import escape from 'escape-html';
 import fileEval from 'file-eval';
 
@@ -46,8 +47,12 @@ export function renderFiber(fiber: FiberNode | FiberNode[]): string {
 export async function renderEntrypoint({
   page,
   entrypoint,
-}: PageBundleInfo): Promise<Fiber> {
-  const pageContext = vm.createContext({ window: {} });
+}: PageBundleInfo): Promise<{ root: Fiber; initialProps: string }> {
+  const pageContext = vm.createContext({
+    window: {},
+    fetch,
+    JSON,
+  });
   try {
     for (let entrypointPath of entrypoint) {
       await fileEval(
@@ -60,11 +65,18 @@ export async function renderEntrypoint({
       throw Error(`Cannot render page ${page}: check default export`);
     }
 
-    const result = vm.runInContext('window.default()', pageContext);
+    const initialProps = await vm.runInContext(
+      'window.getInitialProps && window.getInitialProps() || {}',
+      pageContext,
+    );
+    const result = vm.runInContext(
+      `window.default(JSON.parse('${JSON.stringify(initialProps)}'))`,
+      pageContext,
+    );
     if (!isFiber(result)) {
       throw Error(`Expected fiber to be rendered, got ${result.toString()}`);
     }
-    return result;
+    return { root: result, initialProps: JSON.stringify(initialProps) };
   } catch (err) {
     console.error(`⛔️ ${err.message}`);
     console.error(err.stack);

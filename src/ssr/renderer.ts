@@ -12,6 +12,7 @@ const pageTemplate = `<!DOCTYPE html>
   <head></head>
   <body>
     <div id="__nicessr__root__">{{RENDERED_MARKUP}}</div>
+    <script>window.__nicessr_initial_props__ = '{{INITIAL_PROPS}}'</script>
     {{ENTRYPOINTS}}
   </body>
 </html>`;
@@ -22,12 +23,11 @@ export async function renderPage(url: string): Promise<string | null> {
     return null;
   }
 
-  const renderedTree = flattenFragments(
-    await renderEntrypoint({
-      page: url,
-      entrypoint: pageEntrypoint,
-    }),
-  );
+  const { root, initialProps } = await renderEntrypoint({
+    page: url,
+    entrypoint: pageEntrypoint,
+  });
+  const renderedTree = flattenFragments(root);
 
   return pageTemplate
     .replace(
@@ -36,6 +36,7 @@ export async function renderPage(url: string): Promise<string | null> {
         .map((entrypoint) => `<script src="/.nicessr/${entrypoint}"></script>`)
         .join('\n'),
     )
+    .replace('{{INITIAL_PROPS}}', initialProps)
     .replace(
       '{{RENDERED_MARKUP}}',
       renderedTree ? renderFiber(renderedTree) : '',

@@ -21,7 +21,9 @@ export function hydrate(rendererFn: FiberFn) {
   if (typeof document === 'undefined') return;
   useAutoReload();
 
-  const renderedTree = flattenFragments(rendererFn({}) as Fiber);
+  const renderedTree = flattenFragments(
+    rendererFn(JSON.parse((window as any).__nicessr_initial_props__)) as Fiber,
+  );
   const hydratedRoot = document.getElementById('__nicessr__root__');
 
   if (Array.isArray(renderedTree)) {
