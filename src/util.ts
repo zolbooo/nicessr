@@ -1,4 +1,4 @@
-import { compiledPages } from './compiler';
+import { compiledPages } from './ssr/compiler';
 
 export function resolveURL(url: string) {
   if (url.endsWith('/')) return url + 'index';

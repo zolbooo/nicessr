@@ -4,7 +4,7 @@ import express from 'express';
 
 import { resolveURL } from './util';
 import { renderPage } from './ssr/renderer';
-import { compiledPages } from './compiler';
+import { compiledPages } from './ssr/compiler';
 import { unsubscribe, subscribeForPageUpdates } from './auto-reload';
 
 async function bootstrap() {

@@ -2,7 +2,7 @@ import path from 'path';
 import webpack from 'webpack';
 import chokidar from 'chokidar';
 import { CleanWebpackPlugin } from 'clean-webpack-plugin';
-import { pushPageUpdate } from './auto-reload';
+import { pushPageUpdate } from '../auto-reload';
 
 function getPagePath(fsPath: string) {
   return fsPath.slice('src/pages'.length).split('.').slice(0, -1).join('.');
