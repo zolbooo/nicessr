@@ -30,6 +30,7 @@ const compiler = webpack({
     filename: '[chunkhash].js',
   },
   optimization: {
+    splitChunks: { chunks: 'all' },
     runtimeChunk: 'single',
   },
   plugins: [new CleanWebpackPlugin()],
