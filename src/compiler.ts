@@ -1,6 +1,7 @@
 import path from 'path';
 import webpack from 'webpack';
 import chokidar from 'chokidar';
+import { CleanWebpackPlugin } from 'clean-webpack-plugin';
 
 function getPagePath(fsPath: string) {
   return fsPath.slice('src/pages'.length).split('.').slice(0, -1).join('.');
@@ -31,6 +32,7 @@ const compiler = webpack({
   optimization: {
     runtimeChunk: 'single',
   },
+  plugins: [new CleanWebpackPlugin()],
 });
 const watcher = compiler.watch({}, (err, stats) => {
   if (err) {
