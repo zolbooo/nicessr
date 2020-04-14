@@ -6,3 +6,4 @@ prod/
 .env
 
 .nicessr/
+src/pages/
