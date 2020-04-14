@@ -1,4 +1,5 @@
 import { compiledPages } from './compiler';
+import { renderToString } from './ssr';
 
 function getPageEntrypoint(url: string): string[] | null {
   if (url[url.length - 1] === '/')
@@ -10,6 +11,7 @@ const pageTemplate = `<!DOCTYPE html>
 <html>
   <head></head>
   <body>
+    {{RENDERED_MARKUP}}
     {{ENTRYPOINTS}}
     <script>
       new EventSource(
@@ -26,15 +28,17 @@ const pageTemplate = `<!DOCTYPE html>
   </body>
 </html>`;
 
-export function renderPage(url: string): string | null {
+export async function renderPage(url: string): Promise<string | null> {
   const pageEntrypoint = getPageEntrypoint(url);
   if (!pageEntrypoint) {
     return null;
   }
-  return pageTemplate.replace(
-    '{{ENTRYPOINTS}}',
-    pageEntrypoint
-      .map((entrypoint) => `<script src="/.nicessr/${entrypoint}"></script>`)
-      .join('\n'),
-  );
+  return pageTemplate
+    .replace(
+      '{{ENTRYPOINTS}}',
+      pageEntrypoint
+        .map((entrypoint) => `<script src="/.nicessr/${entrypoint}"></script>`)
+        .join('\n'),
+    )
+    .replace('{{RENDERED_MARKUP}}', await renderToString(pageEntrypoint));
 }

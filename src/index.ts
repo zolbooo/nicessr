@@ -42,13 +42,13 @@ async function bootstrap() {
     '/.nicessr',
     express.static(path.join(process.cwd(), '.nicessr', 'build')),
   );
-  app.get('*', (req, res, next) => {
-    const markup = renderPage(req.url);
+  app.get('*', async (req, res, next) => {
+    const markup = await renderPage(req.url);
     if (markup === null) {
       next();
       return;
     }
-    res.send(markup);
+    res.status(200).send(markup);
   });
   app.use(express.static(path.join(process.cwd(), 'public')));
 

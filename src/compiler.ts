@@ -29,6 +29,7 @@ const compiler = webpack({
   output: {
     path: path.join(process.cwd(), '.nicessr', 'build'),
     filename: '[chunkhash].js',
+    libraryTarget: 'window',
   },
   module: {
     rules: [
