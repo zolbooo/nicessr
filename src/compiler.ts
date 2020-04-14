@@ -43,6 +43,7 @@ const watcher = compiler.watch({}, (err, stats) => {
 
   const entrypoints = Array.from(stats.compilation.entrypoints.entries());
   entrypoints.forEach(([pageName, entrypoint]) => {
+    console.log(`⚡️ Built page ${pageName}`);
     compiledPages.set(
       pageName,
       entrypoint.chunks.map((chunk) => Array.from(chunk.files.values())).flat(),
