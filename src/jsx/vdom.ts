@@ -82,15 +82,17 @@ export function h<P = FiberProps>(
     elementName: element,
   };
   fiber.props.children =
-    unpackChildren((props as FiberProps).children).map((child) => {
-      if (typeof child === 'object') {
-        if (!isFiber(child)) {
-          throw Error(`Invariant violation: expected Fiber, got ${child}`);
+    unpackChildren((props as FiberProps).children)
+      .flat(Infinity)
+      .map((child) => {
+        if (typeof child === 'object') {
+          if (!isFiber(child)) {
+            throw Error(`Invariant violation: expected Fiber, got ${child}`);
+          }
+          return { ...child, parent: fiber };
         }
-        return { ...child, parent: fiber };
-      }
-      return toFiber(child, fiber);
-    }) ?? [];
+        return toFiber(child, fiber);
+      }) ?? [];
 
   return fiber;
 }
