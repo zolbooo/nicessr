@@ -1,11 +1,26 @@
 import vm from 'vm';
 import path from 'path';
+import escape from 'escape-html';
 import fileEval from 'file-eval';
+
+import { Fiber, isFiber, FiberNode } from './vdom';
 
 export type PageBundleInfo = {
   page: string;
   entrypoint: string[];
 };
+
+export function renderFiber(fiber: Fiber): string {
+  if (fiber.elementName === 'Text') {
+    return escape(fiber.props.children[0]);
+  }
+  if (fiber.elementName === 'Fragment') {
+    return (fiber.props.children as FiberNode[]).map(renderFiber).join('');
+  }
+  return `<${fiber.elementName}>${(fiber.props.children as FiberNode[])
+    .map(renderFiber)
+    .join('')}</${fiber.elementName}>`;
+}
 
 export async function renderToString({
   page,
@@ -13,7 +28,6 @@ export async function renderToString({
 }: PageBundleInfo): Promise<string> {
   const pageContext = vm.createContext({
     window: {},
-    console: {},
     document: {},
   });
   try {
@@ -28,7 +42,8 @@ export async function renderToString({
       throw Error(`Cannot render page ${page}: check default export`);
     }
 
-    return vm.runInContext('window.default()', pageContext);
+    const result = vm.runInContext('window.default()', pageContext);
+    return isFiber(result) ? renderFiber(result) : result;
   } catch (err) {
     console.error(`⛔️ ${err.message}`);
     console.error(err.stack);
