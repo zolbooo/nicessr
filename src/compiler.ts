@@ -50,7 +50,7 @@ const compiler = webpack({
                 '@babel/plugin-transform-react-jsx',
                 {
                   runtime: 'automatic',
-                  importSource: '../../prod',
+                  importSource: '../../prod/jsx',
                 },
               ],
             ],
