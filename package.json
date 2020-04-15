@@ -9,9 +9,10 @@
     "./": "./dist/csr/"
   },
   "files": [
-    "dist"
+    "dist",
+    "./cli.js"
   ],
-  "bin": "dist/index.js",
+  "bin": "./cli.js",
   "scripts": {
     "build": "npx tsc",
     "start": "node dist/index.js",
