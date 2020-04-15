@@ -1,9 +1,14 @@
 {
+  "type": "module",
   "name": "nicessr",
   "version": "1.0.0",
   "description": "ES6-based simple framework for SSR",
-  "main": "dist/index.js",
-  "bin": "cli.js",
+  "main": "dist/csr/index.js",
+  "types": "dist/csr/index.d.ts",
+  "exports": {
+    "./": "./dist/csr/"
+  },
+  "bin": "dist/index.js",
   "scripts": {
     "build": "npx tsc",
     "start": "node dist/index.js",
