@@ -68,7 +68,7 @@ const compiler = webpack({
   },
   resolve: {
     alias: {
-      nicessr: path.join(__dirname, '..'),
+      nicessr: path.join(__dirname, '..', 'csr'),
     },
   },
   plugins: [

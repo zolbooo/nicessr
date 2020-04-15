@@ -4,7 +4,7 @@ import fetch from 'node-fetch';
 import escape from 'escape-html';
 import fileEval from 'file-eval';
 
-import { Fiber, isFiber, FiberNode, FiberProps } from '../jsx/vdom';
+import { Fiber, isFiber, FiberNode, FiberProps } from '../csr/jsx/vdom';
 
 export type PageBundleInfo = {
   page: string;

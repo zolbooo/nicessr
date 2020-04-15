@@ -1,6 +1,6 @@
 import { resolveURL } from '../util';
 import { compiledPages } from './compiler';
-import { flattenFragments } from '@/jsx/jsx-runtime';
+import { flattenFragments } from '@/csr/jsx/jsx-runtime';
 
 import { renderEntrypoint, renderFiber } from '.';
 
