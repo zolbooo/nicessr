@@ -1,6 +1,9 @@
+import { Ref } from '..';
+
 const __fiber = 'NicessrFiber';
 
-export type FiberProps = {
+export type FiberProps<RefType = any> = {
+  ref?: Ref<RefType>;
   class?: string | string[];
   children?: FiberNode | FiberNode[];
 };

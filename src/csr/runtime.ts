@@ -1,3 +1,4 @@
+import { isRef, Ref } from '.';
 import { Fiber, FiberFn } from './jsx/vdom';
 import { flattenFragments } from './jsx/jsx-runtime';
 
@@ -26,13 +27,13 @@ export function hydrate(rendererFn: FiberFn) {
 
   if (Array.isArray(renderedTree))
     renderedTree.forEach((fiber, i) =>
-      attachFunctionalProps(hydratedRoot.childNodes[i], fiber),
+      attachProps(hydratedRoot.childNodes[i], fiber),
     );
-  else attachFunctionalProps(hydratedRoot.childNodes[0], renderedTree);
+  else attachProps(hydratedRoot.childNodes[0], renderedTree);
 }
 
 const onMountQueue: [Node, (element: Node) => void][] = [];
-function attachFunctionalProps(realRoot: Node, virtualRoot: Fiber) {
+function attachProps(realRoot: Node, virtualRoot: Fiber) {
   if (process.env.NODE_ENV === 'development') {
     if (
       realRoot.nodeName.toLowerCase() !== virtualRoot.elementName.toLowerCase()
@@ -41,11 +42,18 @@ function attachFunctionalProps(realRoot: Node, virtualRoot: Fiber) {
         `Invariant violation: invalid tree rendered, ${realRoot.nodeName} on server, ${virtualRoot.elementName} on client`,
       );
     }
+    if (virtualRoot.props.ref && !isRef(virtualRoot.props.ref)) {
+      throw Error(
+        'Invariant violation: invalid ref passed, use ref created by useRef function',
+      );
+    }
     if (virtualRoot.elementName === '#text') return;
   }
 
   Object.entries(virtualRoot.props as any).forEach(
-    ([key, value]: [string, Function]) => {
+    ([key, value]: [string, Function | Ref<typeof realRoot>]) => {
+      if (key === 'ref') (value as Ref<typeof realRoot>).current = realRoot;
+      
       if (typeof value !== 'function') return;
       if (key === 'onMount')
         onMountQueue.push([realRoot, value as (node: Node) => void]);
@@ -56,9 +64,7 @@ function attachFunctionalProps(realRoot: Node, virtualRoot: Fiber) {
   const childNodes = (virtualRoot.props.children as Fiber[]).filter(
     (child) => child.elementName !== '#text',
   );
-  childNodes.forEach((fiber, i) =>
-    attachFunctionalProps(realRoot.childNodes[i], fiber),
-  );
+  childNodes.forEach((fiber, i) => attachProps(realRoot.childNodes[i], fiber));
 }
 
 export function clientEntrypoint() {
