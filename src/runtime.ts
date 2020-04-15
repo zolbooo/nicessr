@@ -31,6 +31,7 @@ export function hydrate(rendererFn: FiberFn) {
   else attachFunctionalProps(hydratedRoot.childNodes[0], renderedTree);
 }
 
+const onMountQueue: [Node, (element: Node) => void][] = [];
 function attachFunctionalProps(realRoot: Node, virtualRoot: Fiber) {
   if (process.env.NODE_ENV === 'development') {
     if (
@@ -52,7 +53,8 @@ function attachFunctionalProps(realRoot: Node, virtualRoot: Fiber) {
   Object.entries(virtualRoot.props as any).forEach(
     ([key, value]: [string, Function]) => {
       if (typeof value !== 'function') return;
-      if (key === 'onMount') value(realRoot);
+      if (key === 'onMount')
+        onMountQueue.push([realRoot, value as (node: Node) => void]);
       else realRoot.addEventListener(key, value as () => void);
     },
   );
@@ -68,6 +70,9 @@ export function clientEntrypoint() {
   const onLoad = () => {
     useAutoReload();
     hydrate((window as any).default);
+    setTimeout(() => {
+      onMountQueue.forEach(([node, onMount]) => onMount(node));
+    }, 0);
   };
 
   if (
