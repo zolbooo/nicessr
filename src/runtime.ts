@@ -19,21 +19,16 @@ export function useAutoReload() {
 
 export function hydrate(rendererFn: FiberFn) {
   if (typeof document === 'undefined') return;
-  useAutoReload();
-
   const renderedTree = flattenFragments(
     rendererFn(JSON.parse((window as any).__nicessr_initial_props__)) as Fiber,
   );
   const hydratedRoot = document.getElementById('__nicessr__root__');
 
-  if (Array.isArray(renderedTree)) {
+  if (Array.isArray(renderedTree))
     renderedTree.forEach((fiber, i) =>
       attachFunctionalProps(hydratedRoot.childNodes[i], fiber),
     );
-    return;
-  }
-
-  attachFunctionalProps(hydratedRoot.childNodes[0], renderedTree);
+  else attachFunctionalProps(hydratedRoot.childNodes[0], renderedTree);
 }
 
 function attachFunctionalProps(realRoot: Node, virtualRoot: Fiber) {
@@ -66,4 +61,19 @@ function attachFunctionalProps(realRoot: Node, virtualRoot: Fiber) {
   childNodes.forEach((fiber, i) =>
     attachFunctionalProps(realRoot.childNodes[i], fiber),
   );
+}
+
+export function clientEntrypoint() {
+  if (typeof document === 'undefined') return;
+  const onLoad = () => {
+    useAutoReload();
+    hydrate((window as any).default);
+  };
+
+  if (
+    document.readyState === 'complete' ||
+    document.readyState === 'interactive'
+  )
+    setTimeout(onLoad, 0);
+  else document.addEventListener('DOMContentLoaded', onLoad);
 }

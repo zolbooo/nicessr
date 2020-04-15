@@ -1,6 +1,8 @@
 import path from 'path';
 import webpack from 'webpack';
 import chokidar from 'chokidar';
+
+import InjectPlugin, { ENTRY_ORDER } from 'webpack-inject-plugin';
 import { CleanWebpackPlugin } from 'clean-webpack-plugin';
 
 import { pushPageUpdate } from './auto-reload';
@@ -64,7 +66,17 @@ const compiler = webpack({
     splitChunks: { chunks: 'all' },
     runtimeChunk: 'single',
   },
-  plugins: [new CleanWebpackPlugin()],
+  resolve: {
+    alias: {
+      nicessr: path.join(__dirname, '..'),
+    },
+  },
+  plugins: [
+    new CleanWebpackPlugin(),
+    new InjectPlugin(() => `require('nicessr/runtime').clientEntrypoint()`, {
+      entryOrder: ENTRY_ORDER.First,
+    }),
+  ],
 });
 const watcher = compiler.watch({}, (err, stats) => {
   if (err) {
