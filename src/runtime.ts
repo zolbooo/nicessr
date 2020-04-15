@@ -50,10 +50,10 @@ function attachFunctionalProps(realRoot: Node, virtualRoot: Fiber) {
   }
 
   Object.entries(virtualRoot.props as any).forEach(
-    ([key, value]: [string, () => void]) => {
+    ([key, value]: [string, Function]) => {
       if (typeof value !== 'function') return;
-      if (key === 'onMount') value();
-      else realRoot.addEventListener(key, value);
+      if (key === 'onMount') value(realRoot);
+      else realRoot.addEventListener(key, value as () => void);
     },
   );
 
