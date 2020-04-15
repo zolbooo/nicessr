@@ -53,7 +53,7 @@ const compiler = webpack({
                 '@babel/plugin-transform-react-jsx',
                 {
                   runtime: 'automatic',
-                  importSource: path.join(__dirname, '..', '..', 'dist', 'jsx'),
+                  importSource: 'nicessr/jsx',
                 },
               ],
             ],
