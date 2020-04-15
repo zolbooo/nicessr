@@ -31,9 +31,9 @@ const compiler = webpack({
   mode: 'development',
   entry: getEntrypoints,
   watch: true,
-  devtool: 'source-map',
+  devtool: 'inline-source-map',
   output: {
-    path: path.join(process.cwd(), '.nicessr', 'build'),
+    path: path.join(process.cwd(), '.nicessr', 'ssr'),
     filename: '[chunkhash].js',
     libraryTarget: 'window',
   },
@@ -51,7 +51,7 @@ const compiler = webpack({
                 '@babel/plugin-transform-react-jsx',
                 {
                   runtime: 'automatic',
-                  importSource: '../../prod/jsx',
+                  importSource: path.join(__dirname, '..', '..', 'dist', 'jsx'),
                 },
               ],
             ],

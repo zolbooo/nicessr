@@ -56,7 +56,7 @@ export async function renderEntrypoint({
   try {
     for (let entrypointPath of entrypoint) {
       await fileEval(
-        path.join(process.cwd(), '.nicessr', 'build', entrypointPath),
+        path.join(process.cwd(), '.nicessr', 'ssr', entrypointPath),
         { context: pageContext },
       );
     }

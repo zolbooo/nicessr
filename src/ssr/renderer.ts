@@ -1,7 +1,8 @@
 import { resolveURL } from '../util';
 import { compiledPages } from './compiler';
-import { renderEntrypoint, renderFiber } from '.';
 import { flattenFragments } from '@/jsx/jsx-runtime';
+
+import { renderEntrypoint, renderFiber } from '.';
 
 function getPageEntrypoint(url: string): string[] | null {
   return compiledPages.get(resolveURL(url)) ?? null;

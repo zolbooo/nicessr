@@ -2,10 +2,11 @@
   "name": "nicessr",
   "version": "1.0.0",
   "description": "ES6-based simple framework for SSR",
-  "main": "prod/index.js",
+  "main": "dist/index.js",
+  "bin": "cli.js",
   "scripts": {
     "build": "npx tsc",
-    "start": "node prod/index.js",
+    "start": "node dist/index.js",
     "test": "npx jest",
     "dev": "npx tsc-watch --onSuccess 'npm start'"
   },
@@ -51,9 +52,10 @@
     "express": "^4.17.1",
     "file-eval": "^2.0.0",
     "module-alias": "^2.2.2",
+    "node-fetch": "^2.6.0",
     "webpack": "^5.0.0-beta.14"
   },
   "_moduleAliases": {
-    "@": "prod"
+    "@": "dist"
   }
 }
