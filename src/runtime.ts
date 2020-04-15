@@ -41,13 +41,7 @@ function attachFunctionalProps(realRoot: Node, virtualRoot: Fiber) {
         `Invariant violation: invalid tree rendered, ${realRoot.nodeName} on server, ${virtualRoot.elementName} on client`,
       );
     }
-    if (virtualRoot.elementName === '#text') {
-      if (realRoot.textContent !== virtualRoot.props.children[0])
-        throw Error(
-          `Invariant violation: invalid tree rendered, ${realRoot.textContent} on server, ${virtualRoot.props.children[0]} on client`,
-        );
-      return;
-    }
+    if (virtualRoot.elementName === '#text') return;
   }
 
   Object.entries(virtualRoot.props as any).forEach(
@@ -59,7 +53,9 @@ function attachFunctionalProps(realRoot: Node, virtualRoot: Fiber) {
     },
   );
 
-  const childNodes = virtualRoot.props.children as Fiber[];
+  const childNodes = (virtualRoot.props.children as Fiber[]).filter(
+    (child) => child.elementName !== '#text',
+  );
   childNodes.forEach((fiber, i) =>
     attachFunctionalProps(realRoot.childNodes[i], fiber),
   );
