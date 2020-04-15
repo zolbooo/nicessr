@@ -8,6 +8,9 @@
   "exports": {
     "./": "./dist/csr/"
   },
+  "files": [
+    "dist"
+  ],
   "bin": "dist/index.js",
   "scripts": {
     "build": "npx tsc",
