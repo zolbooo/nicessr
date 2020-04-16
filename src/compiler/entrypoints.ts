@@ -1,5 +1,6 @@
 import fs from 'fs';
 import path from 'path';
+import glob from 'glob';
 
 // pagesRoot is webroot for pages
 export const pagesRoot = path.join(process.cwd(), 'src', 'pages');
@@ -60,4 +61,21 @@ export async function resolveEntrypoint(
   }
 
   return null;
+}
+
+/** allEntrypoints traverses src/pages folder recursively and returns all entrypoints */
+export function allEntrypoints(): Promise<[string, string][]> {
+  return new Promise((resolve, reject) =>
+    glob(
+      path.join(pagesRoot, '**', `*{${resolveExtensions.join(',')}}`),
+      (err, matches) => {
+        if (err) reject(err);
+        resolve(
+          matches
+            .map((entrypoint) => entrypoint.slice(pagesRoot.length))
+            .map(resolveExtension),
+        );
+      },
+    ),
+  );
 }
