@@ -1,6 +1,7 @@
 # nicessr
 
 ![npm](https://img.shields.io/npm/v/nicessr)
+![GitHub last commit](https://img.shields.io/github/last-commit/zolbooo/nicessr)
 
 Nicessr - ES6-based simple framework for server-side-rendering
 
@@ -155,3 +156,7 @@ In example below, `textRef.current` value was set to `<p>` element during initia
 ## Contributing
 
 All PRs and issues are welcome!
+
+## Under the hood
+
+Webpack is used internally for build (check out `src/compiler/index.ts`). Pages are built on-demand (only when are requested, look at `src/compiler/bundler/entrypoints.ts`), called on server-side using dynamic `require` (check out `src/ssr/index.ts`).
