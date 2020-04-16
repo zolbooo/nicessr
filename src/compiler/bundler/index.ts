@@ -5,6 +5,7 @@ import { EventEmitter } from 'events';
 
 import { createCompiler } from '../index';
 import { getEntrypointsFromStats } from './stats';
+import { getBundle, clientBundles, serverBundles } from './bundles';
 import { resolveEntrypoint, resolveExtension, pagesRoot } from '../entrypoints';
 
 /** Entrypoint is list of JS files used in bundle */
@@ -30,9 +31,6 @@ export class Bundler extends EventEmitter {
   /** List page entrypoints to be built */
   private $activeEntrypoints = new Map<string, number>();
 
-  private $compilerBundlesSSR = new Map<string, Entrypoint>();
-  private $compilerBundlesClient = new Map<string, Entrypoint>();
-
   private onBuild = (err, { stats }) => {
     if (err) {
       console.error(`⛔️\t ${err.message}`);
@@ -49,17 +47,17 @@ export class Bundler extends EventEmitter {
         const isSSR = pageNameWithPrefix.startsWith('ssr:');
 
         const oldEntrypoint = isSSR
-          ? this.$compilerBundlesSSR.get(pageName)
-          : this.$compilerBundlesClient.get(pageName);
+          ? serverBundles.get(pageName)
+          : clientBundles.get(pageName);
         if (oldEntrypoint && oldEntrypoint.join(',') === entrypoint.join(','))
           return;
 
         if (isSSR) {
           console.log(`⚡️ [SSR] \tBuilt page ${pageName}`);
-          this.$compilerBundlesSSR.set(pageName, entrypoint);
+          serverBundles.set(pageName, entrypoint);
         } else {
           console.log(`⚡️ [Client] \tBuilt page ${pageName}`);
-          this.$compilerBundlesClient.set(pageName, entrypoint);
+          clientBundles.set(pageName, entrypoint);
         }
 
         this.emit(pageName, {
@@ -97,18 +95,6 @@ export class Bundler extends EventEmitter {
     });
   }
 
-  private getBundle(page: string): Bundle | null {
-    if (
-      !this.$compilerBundlesSSR.has(page) ||
-      !this.$compilerBundlesClient.has(page)
-    )
-      return null;
-    return {
-      ssr: this.$compilerBundlesSSR.get(page),
-      client: this.$compilerBundlesClient.get(page),
-    };
-  }
-
   async buildOnce(entrypoint: string): Promise<Bundle | null> {
     const entrypointFile = await resolveEntrypoint(entrypoint);
     if (!entrypointFile) {
@@ -126,12 +112,12 @@ export class Bundler extends EventEmitter {
       this.$watcher.invalidate();
     }
 
-    let bundle: Bundle = this.getBundle(page);
+    let bundle: Bundle = getBundle(page);
     if (bundle === null) {
       console.log(`🛠\tBuilding page ${page}`);
       while (bundle === null) {
         await new Promise((resolve) => this.once(page, resolve));
-        bundle = this.getBundle(page);
+        bundle = getBundle(page);
       }
     }
 
