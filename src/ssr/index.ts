@@ -1,8 +1,5 @@
-import vm from 'vm';
 import path from 'path';
-import fetch from 'node-fetch';
 import escape from 'escape-html';
-import fileEval from 'file-eval';
 
 import { buildPathSSR } from '../compiler';
 import { RequestContext } from '../csr';
@@ -52,35 +49,25 @@ export async function renderEntrypoint({
   page,
   entrypoint,
 }: PageBundleInfo): Promise<{ root: Fiber; initialProps: string }> {
-  const pageContext = vm.createContext({
-    window: {},
-    fetch,
-    JSON,
-    ctx,
-  });
   try {
-    for (let entrypointPath of entrypoint) {
-      await fileEval(path.join(buildPathSSR, entrypointPath), {
-        context: pageContext,
-      });
+    if (entrypoint.length !== 1) {
+      throw Error(
+        `Invariant violation: expected single file as built bundle, got [${entrypoint
+          .map((str) => `'${str}'`)
+          .join(',')}]`,
+      );
     }
 
-    if (typeof pageContext.window.default !== 'function') {
-      throw Error(`Cannot render page ${page}: check default export`);
+    const page = require(path.join(buildPathSSR, entrypoint[0]));
+
+    const initialProps =
+      page.getInitialProps && (await page.getInitialProps(ctx));
+    const root = page.default(initialProps);
+    if (!isFiber(root)) {
+      throw Error(`Expected fiber to be rendered, got ${root.toString()}`);
     }
 
-    const initialProps = await vm.runInContext(
-      'window.getInitialProps && window.getInitialProps(ctx) || {}',
-      pageContext,
-    );
-    const result = vm.runInContext(
-      `window.default(JSON.parse('${JSON.stringify(initialProps)}'))`,
-      pageContext,
-    );
-    if (!isFiber(result)) {
-      throw Error(`Expected fiber to be rendered, got ${result.toString()}`);
-    }
-    return { root: result, initialProps: JSON.stringify(initialProps) };
+    return { root, initialProps: JSON.stringify(initialProps) };
   } catch (err) {
     console.error(`⛔️ ${err.message}`);
     console.error(err.stack);

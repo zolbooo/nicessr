@@ -22,13 +22,9 @@ export const createCompiler = (
       output: {
         path: buildPathSSR,
         filename: '[chunkhash].js',
-        libraryTarget: 'window',
+        libraryTarget: 'commonjs2',
       },
       module: webpackModules,
-      optimization: {
-        splitChunks: { chunks: 'all' },
-        runtimeChunk: 'single',
-      },
       resolve: {
         alias: {
           nicessr: path.join(__dirname, '..', 'csr'),
