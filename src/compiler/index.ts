@@ -40,7 +40,7 @@ export const createCompiler = (
         minimize: isProduction,
         minimizer: [new TerserPlugin()],
       },
-      plugins: [new CleanWebpackPlugin()],
+      plugins: [...(isProduction ? [new CleanWebpackPlugin()] : [])],
     },
     {
       mode: isProduction ? 'production' : 'development',
@@ -66,13 +66,13 @@ export const createCompiler = (
         },
       },
       plugins: [
-        new CleanWebpackPlugin(),
         new InjectPlugin(
           () => `require('nicessr/dist/csr/runtime').clientEntrypoint()`,
           {
             entryOrder: ENTRY_ORDER.First,
           },
         ),
+        ...(isProduction ? [new CleanWebpackPlugin()] : []),
       ],
     },
   ]);
