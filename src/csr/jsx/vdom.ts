@@ -45,7 +45,7 @@ function toFiber(node: FiberNode, parent: Fiber | null): Fiber {
 }
 
 function unpackChildren(children?: FiberNode | FiberNode[]): FiberNode[] {
-  if (!children) return [];
+  if (children === null || children === undefined) return [];
   if (!Array.isArray(children)) return [toFiber(children, null)];
   return children;
 }
