@@ -8,12 +8,13 @@
     "outDir": "dist",
     "strict": false,
     "module": "CommonJS",
+    "sourceMap": true,
     "declaration": true,
     "skipLibCheck": true,
     "moduleResolution": "node",
     "allowSyntheticDefaultImports": true,
     "forceConsistentCasingInFileNames": true
   },
-  "exclude": ["node_modules", "./src/pages"],
+  "exclude": ["node_modules", "./src/pages", "./src/**/*.test.ts"],
   "include": ["src/**/*.ts"]
 }

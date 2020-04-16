@@ -4,6 +4,7 @@ import fetch from 'node-fetch';
 import escape from 'escape-html';
 import fileEval from 'file-eval';
 
+import { buildPathSSR } from '../compiler';
 import { RequestContext } from '../csr';
 import { Fiber, isFiber, FiberNode, FiberProps } from '../csr/jsx/vdom';
 
@@ -59,10 +60,9 @@ export async function renderEntrypoint({
   });
   try {
     for (let entrypointPath of entrypoint) {
-      await fileEval(
-        path.join(process.cwd(), '.nicessr', 'ssr', entrypointPath),
-        { context: pageContext },
-      );
+      await fileEval(path.join(buildPathSSR, entrypointPath), {
+        context: pageContext,
+      });
     }
 
     if (typeof pageContext.window.default !== 'function') {

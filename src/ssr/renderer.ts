@@ -1,13 +1,8 @@
-import { resolveURL } from '../util';
-import { compiledPages } from './compiler';
 import { RequestContext } from '../csr';
 import { flattenFragments } from '../csr/jsx/jsx-runtime';
 
+import { Bundle } from '../compiler/bundler';
 import { renderEntrypoint, renderFiber } from '.';
-
-function getPageEntrypoint(url: string): string[] | null {
-  return compiledPages.get(resolveURL(url)) ?? null;
-}
 
 const pageTemplate = `<!DOCTYPE html>
 <html>
@@ -22,23 +17,19 @@ const pageTemplate = `<!DOCTYPE html>
 export async function renderPage(
   url: string,
   ctx: RequestContext,
-): Promise<string | null> {
-  const pageEntrypoint = getPageEntrypoint(url);
-  if (!pageEntrypoint) {
-    return null;
-  }
-
+  bundle: Bundle,
+): Promise<string> {
   const { root, initialProps } = await renderEntrypoint({
     ctx,
     page: url,
-    entrypoint: pageEntrypoint,
+    entrypoint: bundle.ssr,
   });
   const renderedTree = flattenFragments(root);
 
   return pageTemplate
     .replace(
       '{{ENTRYPOINTS}}',
-      pageEntrypoint
+      bundle.client
         .map((entrypoint) => `<script src="/.nicessr/${entrypoint}"></script>`)
         .join('\n'),
     )
