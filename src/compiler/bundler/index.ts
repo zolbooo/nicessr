@@ -1,10 +1,10 @@
-import path from 'path';
 import { EventEmitter } from 'events';
 
 import { createCompiler } from '../index';
 import { getEntrypointsFromStats } from './stats';
+import { reference, unref, getEntrypoints } from './entrypoints';
+import { resolveEntrypoint, resolveExtension } from '../entrypoints';
 import { getBundle, clientBundles, serverBundles } from './bundles';
-import { resolveEntrypoint, resolveExtension, pagesRoot } from '../entrypoints';
 
 /** Entrypoint is list of JS files used in bundle */
 export type Entrypoint = string[];
@@ -26,9 +26,6 @@ export type BuildEventListener = (event: BuildEvent) => void;
 
 /** Bundler is responsible of maintaining list of current bundles */
 export class Bundler extends EventEmitter {
-  /** List page entrypoints to be built */
-  private $activeEntrypoints = new Map<string, number>();
-
   private onBuild = (err, { stats }) => {
     if (err) {
       console.error(`⛔️\t ${err.message}`);
@@ -66,31 +63,14 @@ export class Bundler extends EventEmitter {
     });
   };
 
-  private getEntrypoints = (prefix: string) => () =>
-    Array.from(this.$activeEntrypoints.entries())
-      .filter(([_, count]) => count > 0)
-      .map(([page]) => page)
-      .reduce(
-        (entrypoints, entrypointFile) => ({
-          ...entrypoints,
-          [prefix + resolveExtension(entrypointFile)[0]]: path.join(
-            pagesRoot,
-            entrypointFile,
-          ),
-        }),
-        {},
-      );
-  private $watcher = createCompiler(this.getEntrypoints).watch(
+  private $watcher = createCompiler(getEntrypoints).watch(
     {},
     this.onBuild as any,
   );
 
   constructor() {
     super();
-    process.on('SIGINT', () => {
-      this.$watcher.close(() => {});
-      this.$watcher.close(() => {});
-    });
+    process.on('SIGINT', () => this.$watcher.close(() => {}));
   }
 
   async buildOnce(entrypoint: string): Promise<Bundle | null> {
@@ -100,15 +80,7 @@ export class Bundler extends EventEmitter {
     }
 
     const [page] = resolveExtension(entrypointFile);
-    if (this.$activeEntrypoints.has(entrypointFile)) {
-      this.$activeEntrypoints.set(
-        entrypointFile,
-        this.$activeEntrypoints.get(entrypointFile) + 1,
-      );
-    } else {
-      this.$activeEntrypoints.set(entrypointFile, 1);
-      this.$watcher.invalidate();
-    }
+    reference(entrypoint, this.$watcher);
 
     let bundle: Bundle = getBundle(page);
     if (bundle === null) {
@@ -119,10 +91,7 @@ export class Bundler extends EventEmitter {
       }
     }
 
-    this.$activeEntrypoints.set(
-      entrypointFile,
-      this.$activeEntrypoints.get(entrypointFile) - 1,
-    );
+    unref(entrypointFile);
     return bundle;
   }
 
@@ -138,15 +107,7 @@ export class Bundler extends EventEmitter {
     }
 
     const [page] = resolveExtension(entrypointFile);
-    if (this.$activeEntrypoints.has(entrypointFile)) {
-      this.$activeEntrypoints.set(
-        entrypointFile,
-        this.$activeEntrypoints.get(entrypointFile) + 1,
-      );
-    } else {
-      this.$activeEntrypoints.set(entrypointFile, 1);
-      this.$watcher.invalidate();
-    }
+    reference(entrypoint, this.$watcher);
 
     this.addListener(page, handler);
   }
@@ -161,10 +122,8 @@ export class Bundler extends EventEmitter {
     }
 
     const [page] = resolveExtension(entrypointFile);
-    this.$activeEntrypoints.set(
-      entrypointFile,
-      this.$activeEntrypoints.get(entrypointFile) - 1,
-    );
+    unref(entrypoint);
+
     this.removeListener(page, handler);
   }
 }
