@@ -2,7 +2,8 @@ import { RequestContext } from '../csr';
 import { flattenFragments } from '../csr/jsx/jsx-runtime';
 
 import { Bundle } from '../compiler/bundler';
-import { renderEntrypoint, renderFiber } from '.';
+import { renderFiber } from './fiber';
+import { renderEntrypoint } from '.';
 
 const pageTemplate = `<!DOCTYPE html>
 <html>
