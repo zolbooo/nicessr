@@ -17,7 +17,7 @@ let appContext: AppContextData = {
 
 export async function getAppContext(): Promise<any> {
   if (appContext.entrypoint !== appContextBundleRef.current[0]) {
-    await appContext.module?.dispose?.();
+    await appContext.module?.dispose?.(appContext.context);
     appContext.entrypoint = appContextBundleRef.current[0];
     if (appContext.entrypoint)
       appContext.module = require(path.join(
