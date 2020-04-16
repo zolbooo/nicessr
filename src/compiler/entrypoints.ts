@@ -41,6 +41,10 @@ export async function resolveEntrypoint(
   if (!entrypoint.startsWith('/')) {
     throw Error(`Entrypoint should start with slash, got ${entrypoint}`);
   }
+  if (entrypoint.startsWith('/_')) {
+    // Prohibit special pages
+    return null;
+  }
 
   for (let extension of resolveExtensions) {
     if (
