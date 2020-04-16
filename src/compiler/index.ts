@@ -1,5 +1,6 @@
 import path from 'path';
 import webpack from 'webpack';
+import nodeExternals from 'webpack-node-externals';
 
 import InjectPlugin, { ENTRY_ORDER } from 'webpack-inject-plugin';
 import { CleanWebpackPlugin } from 'clean-webpack-plugin';
@@ -25,6 +26,8 @@ export const createCompiler = (
         libraryTarget: 'commonjs2',
       },
       module: webpackModules,
+      target: 'node',
+      externals: [nodeExternals()],
       resolve: {
         alias: {
           nicessr: path.join(__dirname, '..', 'csr'),

@@ -65,6 +65,7 @@
     "glob": "^7.1.6",
     "node-fetch": "^2.6.0",
     "webpack": "^5.0.0-beta.14",
-    "webpack-inject-plugin": "^1.5.4"
+    "webpack-inject-plugin": "^1.5.4",
+    "webpack-node-externals": "^1.7.2"
   }
 }
