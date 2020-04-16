@@ -1,8 +1,9 @@
+import path from 'path';
 import webpack from 'webpack';
 import { EventEmitter } from 'events';
 
 import { createCompilerSSR } from './index';
-import { resolveEntrypoint, resolveExtension } from './entrypoints';
+import { resolveEntrypoint, resolveExtension, pagesRoot } from './entrypoints';
 
 /** Entrypoint is list of JS files used in bundle */
 export type Entrypoint = string[];
@@ -54,18 +55,20 @@ export class Bundler extends EventEmitter {
     });
   };
 
-  private getEntrypoints = () => {
-    return Array.from(this.$activeEntrypoints.entries())
+  private getEntrypoints = () =>
+    Array.from(this.$activeEntrypoints.entries())
       .filter(([_, count]) => count > 0)
       .map(([page]) => page)
       .reduce(
         (entrypoints, entrypointFile) => ({
           ...entrypoints,
-          [resolveExtension(entrypointFile)[0]]: entrypointFile,
+          [resolveExtension(entrypointFile)[0]]: path.join(
+            pagesRoot,
+            entrypointFile,
+          ),
         }),
         {},
       );
-  };
   private $ssrWatcher = createCompilerSSR(this.getEntrypoints).watch(
     {},
     this.onBuild,
