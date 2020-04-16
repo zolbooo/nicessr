@@ -4,6 +4,7 @@ import webpack from 'webpack';
 import { EventEmitter } from 'events';
 
 import { createCompiler } from '../index';
+import { getEntrypointsFromStats } from './stats';
 import { resolveEntrypoint, resolveExtension, pagesRoot } from '../entrypoints';
 
 /** Entrypoint is list of JS files used in bundle */
@@ -32,14 +33,6 @@ export class Bundler extends EventEmitter {
   private $compilerBundlesSSR = new Map<string, Entrypoint>();
   private $compilerBundlesClient = new Map<string, Entrypoint>();
 
-  private getEntrypointsFromStats = (stats: webpack.Stats) => {
-    return Array.from(
-      stats.compilation.entrypoints.entries(),
-    ).map(([pageName, entrypoint]) => [
-      pageName,
-      entrypoint.chunks.map((chunk) => Array.from(chunk.files.values())).flat(),
-    ]);
-  };
   private onBuild = (err, { stats }) => {
     if (err) {
       console.error(`⛔️\t ${err.message}`);
@@ -47,7 +40,7 @@ export class Bundler extends EventEmitter {
       return;
     }
 
-    const bundle = stats.map(this.getEntrypointsFromStats);
+    const bundle = stats.map(getEntrypointsFromStats);
     bundle.forEach((entrypoints) => {
       entrypoints.forEach(([pageNameWithPrefix, entrypoint]) => {
         const pageName = pageNameWithPrefix.startsWith('ssr:')
