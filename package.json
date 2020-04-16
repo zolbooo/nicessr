@@ -50,6 +50,7 @@
     "typescript": "^3.8.3"
   },
   "dependencies": {
+    "@babel/core": "^7.9.0",
     "@babel/plugin-transform-react-jsx": "^7.9.4",
     "@babel/preset-env": "^7.9.5",
     "babel-loader": "^8.1.0",
@@ -58,13 +59,8 @@
     "escape-html": "^1.0.3",
     "express": "^4.17.1",
     "file-eval": "^2.0.0",
-    "@babel/core": "^7.9.0",
-    "module-alias": "^2.2.2",
     "node-fetch": "^2.6.0",
     "webpack": "^5.0.0-beta.14",
     "webpack-inject-plugin": "^1.5.4"
-  },
-  "_moduleAliases": {
-    "@": "dist"
   }
 }
