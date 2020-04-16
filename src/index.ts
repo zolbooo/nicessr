@@ -28,7 +28,7 @@ async function bootstrap() {
       }
     };
 
-    bundler.subscribe(req.path, handleBuildEvent);
+    bundler.subscribe(req.query.page?.toString(), handleBuildEvent);
     res.socket.setTimeout(1000 * 60 * 60 * 24);
     res.writeHead(200, {
       'Content-Type': 'text/event-stream',
