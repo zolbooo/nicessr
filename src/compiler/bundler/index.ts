@@ -1,5 +1,5 @@
-import fs from 'fs';
 import path from 'path';
+import chokidar from 'chokidar';
 import { EventEmitter } from 'events';
 
 import { createCompiler } from '../index';
@@ -49,6 +49,8 @@ export class Bundler extends EventEmitter {
     bundle.forEach((entrypoints) => {
       entrypoints.forEach(([entrypointName, entrypoint]) => {
         if (entrypointName === 'ssr:_app') {
+          if (entrypoint[0] === appContextBundleRef.current[0]) return;
+
           console.log('⚡️ [SSR]\tBuilt app context');
           appContextBundleRef.current = entrypoint ?? [];
           this.emit('appContext', {
@@ -92,10 +94,14 @@ export class Bundler extends EventEmitter {
 
   constructor() {
     super();
-    fs.watchFile(path.join(pagesRoot, '_app.js'), {}, () => {
-      this.$watcher.invalidate();
+    const appCtxWatcher = chokidar
+      .watch(path.join(pagesRoot, '_app.js'))
+      .on('add', () => this.$watcher.invalidate())
+      .on('unlink', () => this.$watcher.invalidate());
+    process.on('SIGINT', () => {
+      this.$watcher.close(() => {});
+      appCtxWatcher.close();
     });
-    process.on('SIGINT', () => this.$watcher.close(() => {}));
   }
 
   async buildOnce(entrypoint: string): Promise<Bundle | null> {
