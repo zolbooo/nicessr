@@ -1,9 +1,10 @@
+import fs from 'fs';
 import path from 'path';
 import webpack from 'webpack';
 import { EventEmitter } from 'events';
 
-import { createCompiler } from './index';
-import { resolveEntrypoint, resolveExtension, pagesRoot } from './entrypoints';
+import { createCompiler } from '../index';
+import { resolveEntrypoint, resolveExtension, pagesRoot } from '../entrypoints';
 
 /** Entrypoint is list of JS files used in bundle */
 export type Entrypoint = string[];
