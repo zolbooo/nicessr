@@ -35,6 +35,7 @@ export const createCompiler = (
         process.env.NODE_ENV === 'production' ? 'production' : 'development',
       entry: getEntrypoints('client:'),
       watch: true,
+      devtool: 'source-map',
       output: {
         path: buildPathClient,
         filename: '[chunkhash].js',
