@@ -28,11 +28,6 @@ export const createCompiler = (
       module: webpackModules,
       target: 'node',
       externals: [nodeExternals()],
-      resolve: {
-        alias: {
-          nicessr: path.join(__dirname, '..', 'csr'),
-        },
-      },
       plugins: [new CleanWebpackPlugin()],
     },
     {
@@ -49,11 +44,6 @@ export const createCompiler = (
       optimization: {
         splitChunks: { chunks: 'all' },
         runtimeChunk: 'single',
-      },
-      resolve: {
-        alias: {
-          nicessr: path.join(__dirname, '..', 'csr'),
-        },
       },
       plugins: [
         new CleanWebpackPlugin(),

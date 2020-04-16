@@ -4,9 +4,6 @@
   "description": "ES6-based simple framework for SSR",
   "main": "dist/csr/index.js",
   "types": "dist/csr/index.d.ts",
-  "exports": {
-    "./": "./dist/csr/"
-  },
   "files": [
     "dist",
     "./cli.js"

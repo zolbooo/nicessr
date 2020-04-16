@@ -14,7 +14,7 @@ const modules: webpack.Module = {
               '@babel/plugin-transform-react-jsx',
               {
                 runtime: 'automatic',
-                importSource: 'nicessr/jsx',
+                importSource: 'nicessr/dist/csr/jsx',
               },
             ],
           ],
