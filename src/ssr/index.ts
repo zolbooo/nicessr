@@ -4,9 +4,11 @@ import fetch from 'node-fetch';
 import escape from 'escape-html';
 import fileEval from 'file-eval';
 
+import { RequestContext } from '../csr';
 import { Fiber, isFiber, FiberNode, FiberProps } from '../csr/jsx/vdom';
 
 export type PageBundleInfo = {
+  ctx: RequestContext;
   page: string;
   entrypoint: string[];
 };
@@ -45,6 +47,7 @@ export function renderFiber(fiber: FiberNode | FiberNode[]): string {
 }
 
 export async function renderEntrypoint({
+  ctx,
   page,
   entrypoint,
 }: PageBundleInfo): Promise<{ root: Fiber; initialProps: string }> {
@@ -52,6 +55,7 @@ export async function renderEntrypoint({
     window: {},
     fetch,
     JSON,
+    ctx,
   });
   try {
     for (let entrypointPath of entrypoint) {
@@ -66,7 +70,7 @@ export async function renderEntrypoint({
     }
 
     const initialProps = await vm.runInContext(
-      'window.getInitialProps && window.getInitialProps() || {}',
+      'window.getInitialProps && window.getInitialProps(ctx) || {}',
       pageContext,
     );
     const result = vm.runInContext(

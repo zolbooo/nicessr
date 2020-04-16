@@ -36,7 +36,7 @@ async function bootstrap() {
     express.static(path.join(process.cwd(), '.nicessr', 'ssr')),
   );
   app.get('*', async (req, res, next) => {
-    const markup = await renderPage(req.url);
+    const markup = await renderPage(req.url, { req, res });
     if (markup === null) {
       next();
       return;

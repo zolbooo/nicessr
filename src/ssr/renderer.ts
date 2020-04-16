@@ -1,5 +1,6 @@
 import { resolveURL } from '../util';
 import { compiledPages } from './compiler';
+import { RequestContext } from '../csr';
 import { flattenFragments } from '../csr/jsx/jsx-runtime';
 
 import { renderEntrypoint, renderFiber } from '.';
@@ -18,13 +19,17 @@ const pageTemplate = `<!DOCTYPE html>
   </body>
 </html>`;
 
-export async function renderPage(url: string): Promise<string | null> {
+export async function renderPage(
+  url: string,
+  ctx: RequestContext,
+): Promise<string | null> {
   const pageEntrypoint = getPageEntrypoint(url);
   if (!pageEntrypoint) {
     return null;
   }
 
   const { root, initialProps } = await renderEntrypoint({
+    ctx,
     page: url,
     entrypoint: pageEntrypoint,
   });
