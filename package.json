@@ -61,6 +61,7 @@
     "file-eval": "^2.0.0",
     "glob": "^7.1.6",
     "node-fetch": "^2.6.0",
+    "terser-webpack-plugin": "^2.3.5",
     "webpack": "^5.0.0-beta.14",
     "webpack-inject-plugin": "^1.5.4",
     "webpack-node-externals": "^1.7.2"
