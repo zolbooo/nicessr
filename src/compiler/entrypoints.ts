@@ -5,7 +5,7 @@ import glob from 'glob';
 // pagesRoot is webroot for pages
 export const pagesRoot = path.join(process.cwd(), 'src', 'pages');
 // resolveExtensions is array of file extensions resolvable as page entrypoint
-const resolveExtensions = ['.js', '.jsx'];
+export const resolveExtensions = ['.js', '.jsx'];
 
 /** resolveExtension checks if filename ends with resolveExtensions and splits this part out
  * @example
