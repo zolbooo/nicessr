@@ -69,7 +69,7 @@ export function h<P = FiberProps>(
     return toFiber(result, null);
   }
 
-  if (typeof element !== 'string' || !/^(Fragment)|[a-z][a-z0-9\-]+$/.test(element))
+  if (typeof element !== 'string' || !/^(Fragment)|[a-z]([a-z0-9\-]+)?$/.test(element))
     throw Error(
       `Invariant violation: expected corrent element name (a...z, 0...9, -), got ${element.toString()}`,
     );
