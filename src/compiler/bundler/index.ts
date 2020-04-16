@@ -39,10 +39,10 @@ export class Bundler extends EventEmitter {
     const bundle = stats.map(getEntrypointsFromStats);
     bundle.forEach((entrypoints) => {
       entrypoints.forEach(([pageNameWithPrefix, entrypoint]) => {
-        const pageName = pageNameWithPrefix.startsWith('ssr:')
+        const isSSR = pageNameWithPrefix.startsWith('ssr:');
+        const pageName = isSSR
           ? pageNameWithPrefix.slice('ssr:'.length)
           : pageNameWithPrefix.slice('client:'.length);
-        const isSSR = pageNameWithPrefix.startsWith('ssr:');
 
         const oldEntrypoint = isSSR
           ? serverBundles.get(pageName)
@@ -51,10 +51,10 @@ export class Bundler extends EventEmitter {
           return;
 
         if (isSSR) {
-          console.log(`⚡️ [SSR] \tBuilt page ${pageName}`);
+          console.log(`⚡️ [SSR]\tBuilt page ${pageName}`);
           serverBundles.set(pageName, entrypoint);
         } else {
-          console.log(`⚡️ [Client] \tBuilt page ${pageName}`);
+          console.log(`⚡️ [Client]\tBuilt page ${pageName}`);
           clientBundles.set(pageName, entrypoint);
         }
 
