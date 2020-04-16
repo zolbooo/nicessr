@@ -22,7 +22,9 @@ async function bootstrap() {
       if (event.status !== 'success') return;
       newBundle = { ...newBundle, ...event.bundle };
       if ((newBundle.client && newBundle.ssr) || 'appContext' in event.bundle) {
-        res.write(`id: ${newBundle.client[0]}${newBundle.ssr[0]}`);
+        res.write(
+          `id: ${newBundle.client?.[0] ?? ''}${newBundle.ssr?.[0] ?? ''}`,
+        );
         res.write(`data: update`);
         newBundle = { client: null, ssr: null };
       }

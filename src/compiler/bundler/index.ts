@@ -1,9 +1,11 @@
+import fs from 'fs';
+import path from 'path';
 import { EventEmitter } from 'events';
 
 import { createCompiler } from '../index';
 import { getEntrypointsFromStats } from './stats';
 import { reference, unref, getEntrypoints } from './entrypoints';
-import { resolveEntrypoint, resolveExtension } from '../entrypoints';
+import { resolveEntrypoint, resolveExtension, pagesRoot } from '../entrypoints';
 import {
   getBundle,
   clientBundles,
@@ -35,13 +37,14 @@ export type BuildEventListener = (event: BuildEvent) => void;
 
 /** Bundler is responsible of maintaining list of current bundles */
 export class Bundler extends EventEmitter {
-  private onBuild = (err, { stats }) => {
+  private onBuild = (err, result) => {
     if (err) {
       console.error(`⛔️\t ${err.message}`);
       console.log(err.stack);
       return;
     }
 
+    const { stats } = result;
     const bundle = stats.map(getEntrypointsFromStats);
     bundle.forEach((entrypoints) => {
       entrypoints.forEach(([entrypointName, entrypoint]) => {
@@ -88,6 +91,9 @@ export class Bundler extends EventEmitter {
 
   constructor() {
     super();
+    fs.watchFile(path.join(pagesRoot, '_app.js'), {}, () => {
+      this.$watcher.invalidate();
+    });
     process.on('SIGINT', () => this.$watcher.close(() => {}));
   }
 
@@ -98,7 +104,7 @@ export class Bundler extends EventEmitter {
     }
 
     const [page] = resolveExtension(entrypointFile);
-    reference(entrypoint, this.$watcher);
+    reference(entrypointFile, this.$watcher);
 
     let bundle: Bundle = getBundle(page);
     if (bundle === null) {
@@ -125,7 +131,7 @@ export class Bundler extends EventEmitter {
     }
 
     const [page] = resolveExtension(entrypointFile);
-    reference(entrypoint, this.$watcher);
+    reference(entrypointFile, this.$watcher);
 
     this.addListener(page, handler);
     this.addListener('appContext', handler);

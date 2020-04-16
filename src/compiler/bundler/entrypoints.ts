@@ -45,16 +45,10 @@ const getActiveEntrypoints = (prefix: string) => () =>
 export const getEntrypoints = (prefix: string) => () => {
   const entrypoints = getActiveEntrypoints(prefix)();
 
-  const appContextExtension = resolveExtensions.find((extension) =>
-    fs.existsSync(path.join(pagesRoot, '_app' + extension)),
-  );
-  if (appContextExtension) {
-    entrypoints['ssr:_app'] = path.join(
-      pagesRoot,
-      '_app' + appContextExtension,
-    );
-  } else {
-    appContextBundleRef.current = [];
+  if (prefix === 'ssr:') {
+    if (fs.existsSync(path.join(pagesRoot, '_app.js'))) {
+      entrypoints['ssr:_app'] = path.join(pagesRoot, '_app.js');
+    } else appContextBundleRef.current = [];
   }
 
   return entrypoints;
