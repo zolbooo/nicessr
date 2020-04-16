@@ -29,7 +29,7 @@ export async function renderPage(
   return pageTemplate
     .replace(
       '{{ENTRYPOINTS}}',
-      bundle.ssr
+      bundle.client
         .map((entrypoint) => `<script src="/.nicessr/${entrypoint}"></script>`)
         .join('\n'),
     )

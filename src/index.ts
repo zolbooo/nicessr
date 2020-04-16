@@ -2,7 +2,7 @@ import path from 'path';
 import express from 'express';
 
 import { renderPage } from './ssr/renderer';
-import { Bundler, BuildEvent } from './compiler/bundler';
+import { Bundler, BuildEvent, Bundle } from './compiler/bundler';
 
 async function bootstrap() {
   const port = Number(process.env.PORT) || 9000;
@@ -13,10 +13,14 @@ async function bootstrap() {
 
   const bundler = new Bundler();
   app.use('/.nicessr/auto-refresh', (req, res) => {
+    let newBundle: Partial<Bundle> = { client: null, ssr: null };
     const handleBuildEvent = (event: BuildEvent) => {
-      if (event.status === 'success') {
-        res.write(`id: ${event.bundle.ssr[0]}\n`);
-        res.write('data: {"type": "update"}\n\n');
+      if (event.status !== 'success') return;
+      newBundle = { ...newBundle, ...event.bundle };
+      if (newBundle.client && newBundle.ssr) {
+        res.write(`id: ${newBundle.client[0]}${newBundle.ssr[0]}`);
+        res.write(`data: update`);
+        newBundle = { client: null, ssr: null };
       }
     };
 
@@ -33,15 +37,12 @@ async function bootstrap() {
 
   app.use(
     '/.nicessr',
-    express.static(path.join(process.cwd(), '.nicessr', 'ssr')),
+    express.static(path.join(process.cwd(), '.nicessr', 'build')),
   );
   app.get('*', async (req, res, next) => {
-    const buildResult = await bundler.buildOnce(req.path);
-    if (buildResult.status !== 'success') {
-      return next();
-    }
-
-    const markup = await renderPage(req.path, { req, res }, buildResult.bundle);
+    const bundle = await bundler.buildOnce(req.path);
+    if (bundle === null) return next();
+    const markup = await renderPage(req.path, { req, res }, bundle);
     res.status(200).send(markup);
   });
 

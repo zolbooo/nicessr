@@ -2,7 +2,7 @@ import path from 'path';
 import webpack from 'webpack';
 import { EventEmitter } from 'events';
 
-import { createCompilerSSR } from './index';
+import { createCompiler } from './index';
 import { resolveEntrypoint, resolveExtension, pagesRoot } from './entrypoints';
 
 /** Entrypoint is list of JS files used in bundle */
@@ -16,7 +16,7 @@ export type Bundle = {
 export type BuildEvent =
   | {
       status: 'success';
-      bundle: Bundle;
+      bundle: { ssr: Entrypoint } | { client: Entrypoint };
     }
   | { status: 'error'; error: Error }
   | { status: 'not-found' };
@@ -29,68 +29,98 @@ export class Bundler extends EventEmitter {
   private $activeEntrypoints = new Map<string, number>();
 
   private $compilerBundlesSSR = new Map<string, Entrypoint>();
-  private onBuild: webpack.ICompiler.Handler = (err, stats) => {
+  private $compilerBundlesClient = new Map<string, Entrypoint>();
+
+  private getEntrypointsFromStats = (stats: webpack.Stats) => {
+    return Array.from(
+      stats.compilation.entrypoints.entries(),
+    ).map(([pageName, entrypoint]) => [
+      pageName,
+      entrypoint.chunks.map((chunk) => Array.from(chunk.files.values())).flat(),
+    ]);
+  };
+  private onBuild = (err, { stats }) => {
     if (err) {
-      console.error(`⛔️\t${err.message}`);
+      console.error(`⛔️\t ${err.message}`);
       console.log(err.stack);
       return;
     }
 
-    const entrypoints = Array.from(stats.compilation.entrypoints.entries());
-    entrypoints.forEach(([pageName, entrypoint]) => {
-      const newEntrypoint = entrypoint.chunks
-        .map((chunk) => Array.from(chunk.files.values()))
-        .flat();
+    const bundle = stats.map(this.getEntrypointsFromStats);
+    bundle.forEach((entrypoints) => {
+      entrypoints.forEach(([pageNameWithPrefix, entrypoint]) => {
+        const pageName = pageNameWithPrefix.startsWith('ssr:')
+          ? pageNameWithPrefix.slice('ssr:'.length)
+          : pageNameWithPrefix.slice('client:'.length);
+        const isSSR = pageNameWithPrefix.startsWith('ssr:');
 
-      const oldEntrypoint = this.$compilerBundlesSSR.get(pageName);
-      if (oldEntrypoint && oldEntrypoint.join(',') === newEntrypoint.join(','))
-        return;
+        const oldEntrypoint = isSSR
+          ? this.$compilerBundlesSSR.get(pageName)
+          : this.$compilerBundlesClient.get(pageName);
+        if (oldEntrypoint && oldEntrypoint.join(',') === entrypoint.join(','))
+          return;
 
-      console.log(`⚡️\tBuilt page ${pageName}`);
-      this.$compilerBundlesSSR.set(pageName, newEntrypoint);
-      this.emit(pageName, {
-        status: 'success',
-        bundle: { ssr: newEntrypoint },
+        if (isSSR) {
+          console.log(`⚡️ [SSR] \tBuilt page ${pageName}`);
+          this.$compilerBundlesSSR.set(pageName, entrypoint);
+        } else {
+          console.log(`⚡️ [Client] \tBuilt page ${pageName}`);
+          this.$compilerBundlesClient.set(pageName, entrypoint);
+        }
+
+        this.emit(pageName, {
+          status: 'success',
+          bundle: { [isSSR ? 'ssr' : 'client']: entrypoint },
+        });
       });
     });
   };
 
-  private getEntrypoints = () =>
+  private getEntrypoints = (prefix: string) => () =>
     Array.from(this.$activeEntrypoints.entries())
       .filter(([_, count]) => count > 0)
       .map(([page]) => page)
       .reduce(
         (entrypoints, entrypointFile) => ({
           ...entrypoints,
-          [resolveExtension(entrypointFile)[0]]: path.join(
+          [prefix + resolveExtension(entrypointFile)[0]]: path.join(
             pagesRoot,
             entrypointFile,
           ),
         }),
         {},
       );
-  private $ssrWatcher = createCompilerSSR(this.getEntrypoints).watch(
+  private $watcher = createCompiler(this.getEntrypoints).watch(
     {},
-    this.onBuild,
+    this.onBuild as any,
   );
 
   constructor() {
     super();
-    process.on('SIGINT', () => this.$ssrWatcher.close(() => {}));
+    process.on('SIGINT', () => {
+      this.$watcher.close(() => {});
+      this.$watcher.close(() => {});
+    });
   }
 
   private getBundle(page: string): Bundle | null {
-    if (!this.$compilerBundlesSSR.has(page)) return null;
-    return { ssr: this.$compilerBundlesSSR.get(page), client: [] };
+    if (
+      !this.$compilerBundlesSSR.has(page) ||
+      !this.$compilerBundlesClient.has(page)
+    )
+      return null;
+    return {
+      ssr: this.$compilerBundlesSSR.get(page),
+      client: this.$compilerBundlesClient.get(page),
+    };
   }
 
-  async buildOnce(entrypoint: string): Promise<BuildEvent> {
+  async buildOnce(entrypoint: string): Promise<Bundle | null> {
     const entrypointFile = await resolveEntrypoint(entrypoint);
     if (!entrypointFile) {
-      return { status: 'not-found' };
+      return null;
     }
 
-    let result: BuildEvent;
     const [page] = resolveExtension(entrypointFile);
     if (this.$activeEntrypoints.has(entrypointFile)) {
       this.$activeEntrypoints.set(
@@ -99,25 +129,23 @@ export class Bundler extends EventEmitter {
       );
     } else {
       this.$activeEntrypoints.set(entrypointFile, 1);
-      this.$ssrWatcher.invalidate();
+      this.$watcher.invalidate();
     }
 
-    const bundle = this.getBundle(page);
+    let bundle: Bundle = this.getBundle(page);
     if (bundle === null) {
       console.log(`🛠\tBuilding page ${page}`);
-      result = await new Promise((resolve) => this.once(page, resolve));
-    } else {
-      result = {
-        status: 'success',
-        bundle,
-      };
+      while (bundle === null) {
+        await new Promise((resolve) => this.once(page, resolve));
+        bundle = this.getBundle(page);
+      }
     }
 
     this.$activeEntrypoints.set(
       entrypointFile,
       this.$activeEntrypoints.get(entrypointFile) - 1,
     );
-    return result;
+    return bundle;
   }
 
   /**
@@ -139,7 +167,7 @@ export class Bundler extends EventEmitter {
       );
     } else {
       this.$activeEntrypoints.set(entrypointFile, 1);
-      this.$ssrWatcher.invalidate();
+      this.$watcher.invalidate();
     }
 
     this.addListener(page, handler);

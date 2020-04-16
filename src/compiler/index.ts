@@ -7,33 +7,63 @@ import { CleanWebpackPlugin } from 'clean-webpack-plugin';
 import webpackModules from './modules';
 
 export const buildPathSSR = path.join(process.cwd(), '.nicessr', 'ssr');
-export const createCompilerSSR = (
-  getEntrypoints: () => { [key: string]: string },
+export const buildPathClient = path.join(process.cwd(), '.nicessr', 'build');
+
+export const createCompiler = (
+  getEntrypoints: (prefix: string) => () => { [key: string]: string },
 ) =>
-  webpack({
-    mode: process.env.NODE_ENV === 'production' ? 'production' : 'development',
-    entry: getEntrypoints,
-    watch: true,
-    devtool: 'inline-source-map',
-    output: {
-      path: buildPathSSR,
-      filename: '[chunkhash].js',
-      libraryTarget: 'window',
-    },
-    module: webpackModules,
-    optimization: {
-      splitChunks: { chunks: 'all' },
-      runtimeChunk: 'single',
-    },
-    resolve: {
-      alias: {
-        nicessr: path.join(__dirname, '..', 'csr'),
+  webpack([
+    {
+      mode:
+        process.env.NODE_ENV === 'production' ? 'production' : 'development',
+      entry: getEntrypoints('ssr:'),
+      watch: true,
+      devtool: 'inline-source-map',
+      output: {
+        path: buildPathSSR,
+        filename: '[chunkhash].js',
+        libraryTarget: 'window',
       },
+      module: webpackModules,
+      optimization: {
+        splitChunks: { chunks: 'all' },
+        runtimeChunk: 'single',
+      },
+      resolve: {
+        alias: {
+          nicessr: path.join(__dirname, '..', 'csr'),
+        },
+      },
+      plugins: [new CleanWebpackPlugin()],
     },
-    plugins: [
-      new CleanWebpackPlugin(),
-      new InjectPlugin(() => `require('nicessr/runtime').clientEntrypoint()`, {
-        entryOrder: ENTRY_ORDER.First,
-      }),
-    ],
-  });
+    {
+      mode:
+        process.env.NODE_ENV === 'production' ? 'production' : 'development',
+      entry: getEntrypoints('client:'),
+      watch: true,
+      output: {
+        path: buildPathClient,
+        filename: '[chunkhash].js',
+        libraryTarget: 'window',
+      },
+      module: webpackModules,
+      optimization: {
+        splitChunks: { chunks: 'all' },
+        runtimeChunk: 'single',
+      },
+      resolve: {
+        alias: {
+          nicessr: path.join(__dirname, '..', 'csr'),
+        },
+      },
+      plugins: [
+        new CleanWebpackPlugin(),
+        new InjectPlugin(
+          () => `require('nicessr/runtime').clientEntrypoint()`,
+          {
+            entryOrder: ENTRY_ORDER.First,
+          },
+        ),
+      ],
+    },
+  ]);
