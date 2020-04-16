@@ -47,13 +47,13 @@ function attachProps(realRoot: Node, virtualRoot: Fiber) {
         'Invariant violation: invalid ref passed, use ref created by useRef function',
       );
     }
-    if (virtualRoot.elementName === '#text') return;
   }
+  if (virtualRoot.elementName === '#text') return;
 
   Object.entries(virtualRoot.props as any).forEach(
     ([key, value]: [string, Function | Ref<typeof realRoot>]) => {
       if (key === 'ref') (value as Ref<typeof realRoot>).current = realRoot;
-      
+
       if (typeof value !== 'function') return;
       if (key === 'onMount')
         onMountQueue.push([realRoot, value as (node: Node) => void]);
