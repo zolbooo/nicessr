@@ -1,5 +1,5 @@
+import fs from 'fs';
 import path from 'path';
-import chokidar from 'chokidar';
 
 // pagesRoot is webroot for pages
 export const pagesRoot = path.join(process.cwd(), 'src', 'pages');
@@ -22,50 +22,42 @@ export function resolveExtension(path: string): [string, string] | null {
   return null;
 }
 
-/** availableEntrypoints is map of available files in format {[entrypointName] => extension} */
-const availableEntrypoints = new Map<string, string>();
+const existsPromise = (path: string) =>
+  new Promise((resolve) => fs.exists(path, resolve));
 
 /**
+ * Checks if entrypoint exists.
+ * If file does not exist, function will check folder with this name.
  * @example
- * // Assuming that file src/pages/account/balance.js exists
- * resolveEntrypoint('/account/balance'); // /account/balance.js
+ * // Assuming that file src/pages/account/index.js exists
+ * resolveEntrypoint('/account'); // /account/index.js
+ * resolveEntrypoint('/account/index'); // /account/index.js
  * resolveEntrypoint('/account/nobalance'); // null
  */
-export function resolveEntrypoint(entrypoint: string): string {
+export async function resolveEntrypoint(
+  entrypoint: string,
+): Promise<string | null> {
   if (!entrypoint.startsWith('/')) {
     throw Error(`Entrypoint should start with slash, got ${entrypoint}`);
   }
 
-  return availableEntrypoints.has(entrypoint)
-    ? `${entrypoint}.${availableEntrypoints.get(entrypoint)}`
-    : null;
-}
+  for (let extension of resolveExtensions) {
+    if (
+      !entrypoint.endsWith('/') &&
+      (await existsPromise(
+        path.join(pagesRoot, entrypoint.slice(1) + extension),
+      ))
+    )
+      return entrypoint + extension;
+    if (
+      await existsPromise(
+        path.join(pagesRoot, entrypoint.slice(1), 'index' + extension),
+      )
+    )
+      return `${
+        entrypoint.endsWith('/') ? entrypoint : entrypoint + '/'
+      }index${extension}`;
+  }
 
-export default function watchPages() {
-  const pagesWatcher = chokidar
-    .watch(pagesRoot)
-    .on('add', (path) => {
-      const entrypoint = resolveExtension(path.slice(pagesRoot.length));
-      if (entrypoint === null) return;
-
-      const [filename, extension] = entrypoint;
-      if (availableEntrypoints.has(filename)) {
-        throw Error(
-          `Invariant violation: you cannot create two entrypoints with same name, check ${filename}`,
-        );
-      }
-      availableEntrypoints.set(filename, extension);
-    })
-    .on('unlink', (path) => {
-      const entrypoint = resolveExtension(path);
-      if (entrypoint === null) return;
-
-      const [filename] = entrypoint;
-      availableEntrypoints.delete(filename);
-    });
-  process.on('SIGINT', () => {
-    pagesWatcher.close();
-  });
-
-  return pagesWatcher;
+  return null;
 }
