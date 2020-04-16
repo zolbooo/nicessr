@@ -70,7 +70,8 @@ function attachProps(realRoot: Node, virtualRoot: Fiber) {
 export function clientEntrypoint() {
   if (typeof document === 'undefined') return;
   const onLoad = () => {
-    useAutoReload();
+    if (process.env.NODE_ENV === 'development') useAutoReload();
+
     hydrate((window as any).default);
     setTimeout(() => {
       onMountQueue.forEach(([node, onMount]) => onMount(node));
