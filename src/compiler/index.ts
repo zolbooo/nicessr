@@ -27,7 +27,7 @@ export const createCompiler = (
         filename: '[chunkhash].js',
         libraryTarget: 'commonjs2',
       },
-      module: webpackModules,
+      module: webpackModules(true),
       target: 'node',
       externals: [nodeExternals()],
       resolve: {
@@ -52,7 +52,7 @@ export const createCompiler = (
         filename: '[chunkhash].js',
         libraryTarget: 'window',
       },
-      module: webpackModules,
+      module: webpackModules(false),
       optimization: {
         splitChunks: { chunks: 'all' },
         runtimeChunk: 'single',

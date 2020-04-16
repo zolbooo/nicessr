@@ -1,6 +1,6 @@
 import webpack from 'webpack';
 
-const modules: webpack.Module = {
+const modules: (isServer: boolean) => webpack.Module = (isServer) => ({
   rules: [
     {
       test: /\.m?js$/,
@@ -17,11 +17,12 @@ const modules: webpack.Module = {
                 importSource: 'nicessr/dist/csr/jsx',
               },
             ],
+            ...(isServer ? [] : [require('./babel/strip-get-initial-props')]),
           ],
         },
       },
     },
   ],
-};
+});
 
 export default modules;
