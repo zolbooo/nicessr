@@ -28,8 +28,10 @@ export async function renderEntrypoint({
     const page = require(path.join(buildPathSSR, entrypoint[0]));
 
     const initialProps =
-      page.getInitialProps &&
-      (await page.getInitialProps({ ...ctx, ...(await getAppContext()) }));
+      (await page.getInitialProps?.({
+        ...ctx,
+        ...(await getAppContext()),
+      })) ?? {};
     const root = page.default(initialProps);
     if (!isFiber(root)) {
       throw Error(`Expected fiber to be rendered, got ${root.toString()}`);
