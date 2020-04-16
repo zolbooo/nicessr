@@ -1,6 +1,4 @@
-import fs from 'fs';
 import path from 'path';
-import webpack from 'webpack';
 import { EventEmitter } from 'events';
 
 import { createCompiler } from '../index';
