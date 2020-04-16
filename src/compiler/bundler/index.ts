@@ -49,6 +49,7 @@ export class Bundler extends EventEmitter {
     bundle.forEach((entrypoints) => {
       entrypoints.forEach(([entrypointName, entrypoint]) => {
         if (entrypointName === 'ssr:_app') {
+          console.log('⚡️ [SSR]\tBuilt app context');
           appContextBundleRef.current = entrypoint ?? [];
           this.emit('appContext', {
             status: 'success',

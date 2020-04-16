@@ -4,6 +4,8 @@ import { buildPathSSR } from '../compiler';
 import { RequestContext } from '../csr';
 import { Fiber, isFiber } from '../csr/jsx/vdom';
 
+import { getAppContext } from './appContext';
+
 export type PageBundleInfo = {
   ctx: RequestContext;
   page: string;
@@ -12,7 +14,6 @@ export type PageBundleInfo = {
 
 export async function renderEntrypoint({
   ctx,
-  page,
   entrypoint,
 }: PageBundleInfo): Promise<{ root: Fiber; initialProps: string }> {
   try {
@@ -27,7 +28,8 @@ export async function renderEntrypoint({
     const page = require(path.join(buildPathSSR, entrypoint[0]));
 
     const initialProps =
-      page.getInitialProps && (await page.getInitialProps(ctx));
+      page.getInitialProps &&
+      (await page.getInitialProps({ ...ctx, ...(await getAppContext()) }));
     const root = page.default(initialProps);
     if (!isFiber(root)) {
       throw Error(`Expected fiber to be rendered, got ${root.toString()}`);
