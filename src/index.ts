@@ -13,11 +13,15 @@ async function bootstrap() {
 
   const bundler = new Bundler();
   app.use('/.nicessr/auto-refresh', (req, res) => {
-    let newBundle: Partial<Bundle> = { client: null, ssr: null };
+    let newBundle: Partial<Bundle> = {
+      appContext: [],
+      client: null,
+      ssr: null,
+    };
     const handleBuildEvent = (event: BuildEvent) => {
       if (event.status !== 'success') return;
       newBundle = { ...newBundle, ...event.bundle };
-      if (newBundle.client && newBundle.ssr) {
+      if ((newBundle.client && newBundle.ssr) || 'appContext' in event.bundle) {
         res.write(`id: ${newBundle.client[0]}${newBundle.ssr[0]}`);
         res.write(`data: update`);
         newBundle = { client: null, ssr: null };

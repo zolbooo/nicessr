@@ -4,7 +4,12 @@ import { createCompiler } from '../index';
 import { getEntrypointsFromStats } from './stats';
 import { reference, unref, getEntrypoints } from './entrypoints';
 import { resolveEntrypoint, resolveExtension } from '../entrypoints';
-import { getBundle, clientBundles, serverBundles } from './bundles';
+import {
+  getBundle,
+  clientBundles,
+  serverBundles,
+  appContextBundleRef,
+} from './bundles';
 
 /** Entrypoint is list of JS files used in bundle */
 export type Entrypoint = string[];
@@ -12,12 +17,16 @@ export type Entrypoint = string[];
 export type Bundle = {
   ssr: Entrypoint;
   client: Entrypoint;
+  appContext: Entrypoint;
 };
 
 export type BuildEvent =
   | {
       status: 'success';
-      bundle: { ssr: Entrypoint } | { client: Entrypoint };
+      bundle:
+        | { ssr: Entrypoint }
+        | { client: Entrypoint }
+        | { appContext: Entrypoint };
     }
   | { status: 'error'; error: Error }
   | { status: 'not-found' };
@@ -35,11 +44,20 @@ export class Bundler extends EventEmitter {
 
     const bundle = stats.map(getEntrypointsFromStats);
     bundle.forEach((entrypoints) => {
-      entrypoints.forEach(([pageNameWithPrefix, entrypoint]) => {
-        const isSSR = pageNameWithPrefix.startsWith('ssr:');
+      entrypoints.forEach(([entrypointName, entrypoint]) => {
+        if (entrypointName === 'ssr:_app') {
+          appContextBundleRef.current = entrypoint ?? [];
+          this.emit('appContext', {
+            status: 'success',
+            bundle: { appContext: entrypoint },
+          });
+          return;
+        }
+
+        const isSSR = entrypointName.startsWith('ssr:');
         const pageName = isSSR
-          ? pageNameWithPrefix.slice('ssr:'.length)
-          : pageNameWithPrefix.slice('client:'.length);
+          ? entrypointName.slice('ssr:'.length)
+          : entrypointName.slice('client:'.length);
 
         const oldEntrypoint = isSSR
           ? serverBundles.get(pageName)
@@ -110,6 +128,7 @@ export class Bundler extends EventEmitter {
     reference(entrypoint, this.$watcher);
 
     this.addListener(page, handler);
+    this.addListener('appContext', handler);
   }
 
   async unsubscribe(entrypoint: string, handler: BuildEventListener) {
@@ -124,6 +143,7 @@ export class Bundler extends EventEmitter {
     const [page] = resolveExtension(entrypointFile);
     unref(entrypoint);
 
+    this.removeListener('appContext', handler);
     this.removeListener(page, handler);
   }
 }

@@ -1,7 +1,9 @@
+import fs from 'fs';
 import path from 'path';
 import webpack from 'webpack';
 
-import { pagesRoot, resolveExtension } from '../entrypoints';
+import { pagesRoot, resolveExtension, resolveExtensions } from '../entrypoints';
+import { appContextBundleRef } from './bundles';
 
 const activeEntrypoints = new Map<string, number>();
 
@@ -25,7 +27,7 @@ export function unref(entrypoint: string) {
   }
 }
 
-export const getEntrypoints = (prefix: string) => () =>
+const getActiveEntrypoints = (prefix: string) => () =>
   Array.from(activeEntrypoints.entries())
     .filter(([_, count]) => count > 0)
     .map(([page]) => page)
@@ -39,3 +41,21 @@ export const getEntrypoints = (prefix: string) => () =>
       }),
       {},
     );
+
+export const getEntrypoints = (prefix: string) => () => {
+  const entrypoints = getActiveEntrypoints(prefix)();
+
+  const appContextExtension = resolveExtensions.find((extension) =>
+    fs.existsSync(path.join(pagesRoot, '_app' + extension)),
+  );
+  if (appContextExtension) {
+    entrypoints['ssr:_app'] = path.join(
+      pagesRoot,
+      '_app' + appContextExtension,
+    );
+  } else {
+    appContextBundleRef.current = [];
+  }
+
+  return entrypoints;
+};
