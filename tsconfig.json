@@ -8,6 +8,7 @@
     "outDir": "dist",
     "strict": false,
     "module": "CommonJS",
+    "sourceMap": true,
     "declaration": true,
     "skipLibCheck": true,
     "moduleResolution": "node",
