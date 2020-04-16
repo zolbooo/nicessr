@@ -6,6 +6,7 @@ import { CleanWebpackPlugin } from 'clean-webpack-plugin';
 
 import webpackModules from './modules';
 
+export const buildPathSSR = path.join(process.cwd(), '.nicessr', 'ssr');
 export const createCompilerSSR = (
   getEntrypoints: () => { [key: string]: string },
 ) =>
@@ -15,7 +16,7 @@ export const createCompilerSSR = (
     watch: true,
     devtool: 'inline-source-map',
     output: {
-      path: path.join(process.cwd(), '.nicessr', 'ssr'),
+      path: buildPathSSR,
       filename: '[chunkhash].js',
       libraryTarget: 'window',
     },
