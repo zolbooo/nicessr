@@ -8,12 +8,9 @@ args
     () => require('./dist/production/index'),
     ['b'],
   )
-  .command(
-    'serve',
-    'Start production server',
-    () => require('./dist/production/serve'),
-    ['s'],
-  );
+  .command('serve', 'Start production server', () =>
+    require('./dist/production/serve'),
+  )
+  .command('start', 'Start development server', () => require('./dist/index'));
 
-const flags = args.parse(process.argv);
-require('./dist');
+args.parse(process.argv);
