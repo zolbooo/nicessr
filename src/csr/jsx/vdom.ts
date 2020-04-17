@@ -1,10 +1,11 @@
 import { Ref } from '..';
+import { CSSReference } from '../css';
 
 const __fiber = 'NicessrFiber';
 
 export type FiberProps<RefType = any> = {
   ref?: Ref<RefType>;
-  class?: string | string[];
+  class?: string | CSSReference | (string | CSSReference)[];
   children?: FiberNode | FiberNode[];
 };
 
