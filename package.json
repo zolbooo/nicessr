@@ -62,6 +62,7 @@
     "express": "^4.17.1",
     "file-eval": "^2.0.0",
     "glob": "^7.1.6",
+    "lodash.merge": "^4.6.2",
     "node-fetch": "^2.6.0",
     "sha256": "^0.2.0",
     "terser-webpack-plugin": "^2.3.5",
