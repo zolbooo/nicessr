@@ -71,12 +71,15 @@ export function h<P = FiberProps>(
 
   if (
     typeof element !== 'string' ||
-    !/^(Fragment)|[a-z]([a-z0-9\-]+)?$/.test(element)
+    !/^(Fragment)|[a-z]([a-z0-9-]+)?$/.test(element)
   )
     throw Error(
       `Invariant violation: expected correct element name (alphanumeric charachers or -), got ${element.toString()}`,
     );
 
+  if (element === 'style') {
+    throw Error('<style> tag is prohibited. Use css`` syntax instead');
+  }
   if (element === 'script') {
     throw Error('<script> tag is prohibited');
   }
