@@ -9,10 +9,10 @@ Simple server-side-rendering framework for static HTML generation. It lets you r
 
 ## Setup
 
-- Create project: `npm init`
+- Create project: `npm init -y`
 - Install nicessr: `npm install nicessr`
 - Create `src/pages` directory
-- Create some `.js` or `.jsx` file inside
+- Create `index.js` inside, add some code from examples below
 - Run `npx nicessr start`
 - Open browser in `http://localhost:9000`
 
@@ -50,49 +50,6 @@ function HomePage({ number }) {
 }
 
 export default HomePage;
-```
-
-Value returned from `getInitialProps` function will be passed as first argument to page component.
-
-**Warning**: currenly, all `getInitialProps` function exports are removed from client-side bundles.
-
-There is `appContext` instance passed to `getInitialProps` function. It contains `req`, `res` props:
-express `Request` and `Response` objects. You can also extend it by creating `src/pages/_app.js` file:
-
-`src/pages/_app.js`:
-
-```jsx
-import { MongoClient } from 'mongodb';
-
-// Dispose is called when _app.js is updated, use it for cleanup.
-// For example: close connection to database, clearTimeouts, etc.
-export function dispose(ctx) {
-  ctx.client.close();
-}
-
-// Default export is called only on start and when _app.js is updated.
-// It should return object that extends app context.
-export default async function init() {
-  const client = await MongoClient.connect('mongodb://localhost:27017');
-  return { client, db: client.db('my-app') };
-}
-```
-
-`src/pages/index.jsx`:
-
-```jsx
-// There are { client, db, req, res } props passed to getInitialProps function.
-// { client, db } are created by init function in _app.js,
-// { req, res } are express request and response objects
-export async function getInitialProps({ db }) {
-  return { items: await db.collection('items').find().toArray() };
-}
-
-function Home({ items }) {
-  return <p>{JSON.stringify(items)}</p>;
-}
-
-export default Home;
 ```
 
 You can also attach functional props to html. There is `onMount` hook which will be called after DOM rendering and attaching event listeners. The only argument passed is element that has `onMount` hook:
@@ -200,6 +157,51 @@ function Home() {
       <p>2</p>
     </div>
   );
+}
+
+export default Home;
+```
+
+## Advanced
+
+Value returned from `getInitialProps` function will be passed as first argument to page component.
+
+**Warning**: currenly, all `getInitialProps` function exports are removed from client-side bundles.
+
+There is `appContext` instance passed to `getInitialProps` function. It contains `req`, `res` props:
+express `Request` and `Response` objects. You can also extend it by creating `src/pages/_app.js` file:
+
+`src/pages/_app.js`:
+
+```jsx
+import { MongoClient } from 'mongodb';
+
+// Dispose is called when _app.js is updated, use it for cleanup.
+// For example: close connection to database, clearTimeouts, etc.
+export function dispose(ctx) {
+  ctx.client.close();
+}
+
+// Default export is called only on start and when _app.js is updated.
+// It should return object that extends app context.
+export default async function init() {
+  const client = await MongoClient.connect('mongodb://localhost:27017');
+  return { client, db: client.db('my-app') };
+}
+```
+
+`src/pages/index.jsx`:
+
+```jsx
+// There are { client, db, req, res } props passed to getInitialProps function.
+// { client, db } are created by init function in _app.js,
+// { req, res } are express request and response objects
+export async function getInitialProps({ db }) {
+  return { items: await db.collection('items').find().toArray() };
+}
+
+function Home({ items }) {
+  return <p>{JSON.stringify(items)}</p>;
 }
 
 export default Home;
