@@ -153,6 +153,58 @@ export default Home;
 
 In example below, `textRef.current` value was set to `<p>` element during initial render.
 
+You can include css in your components! Example:
+
+```jsx
+import { useRef } from 'nicessr';
+
+const textStyles = css`
+  color: red;
+  font-size: 14px;
+  background-color: white;
+`;
+
+function Home() {
+  let counter = 0;
+  const textRef = useRef();
+
+  return (
+    <>
+      <p class={textStyles} ref={textRef}>
+        {counter}
+      </p>
+      <button click={() => (textRef.current.innerText = ++counter)}>
+        Click me!
+      </button>
+    </>
+  );
+}
+
+export default Home;
+```
+
+You can use css tagged template literal for styles. This will be rendered only on server side, and be included in `<head>` tag of page. Classname will be as short as possible. Also you can pass array to `class` prop of component:
+
+```jsx
+const flexSpaceBetween = css`
+  display: flex;
+  justify-content: space-between;
+`;
+
+const redText = css`
+  color: red;
+`;
+
+function Home() {
+  return (
+    <div class={[flexSpaceBetween, redText]}>
+      <p>1</p>
+      <p>2</p>
+    </div>
+  );
+}
+```
+
 ## Contributing
 
 All PRs and issues are welcome!
