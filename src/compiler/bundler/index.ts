@@ -45,6 +45,8 @@ export class Bundler extends EventEmitter {
     }
 
     const { stats } = result;
+    console.log(stats.toString());
+
     const bundle = stats.map(getEntrypointsFromStats);
     bundle.forEach((entrypoints) => {
       entrypoints.forEach(([entrypointName, entrypoint]) => {
