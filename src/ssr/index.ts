@@ -27,7 +27,10 @@ export async function renderEntrypoint({
     }
 
     globalThis.css = css;
-    const page = require(path.join(buildPathSSR, entrypoint[0]));
+
+    const pageModule = path.join(buildPathSSR, entrypoint[0]);
+    delete require.cache[require.resolve(pageModule)];
+    const page = require(pageModule);
 
     const initialProps =
       (await page.getInitialProps?.({
