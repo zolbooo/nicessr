@@ -62,6 +62,7 @@ export const createCompiler = (
       },
       resolve: {
         alias: {
+          css: false as any,
           nicessr: path.join(__dirname, '..', '..'),
         },
       },
