@@ -42,11 +42,12 @@ function renderProps({
   });
 
   if (className) {
-    if (Array.isArray(className)) {
-      propList.push(`class="${className.map(renderClass).join(' ')}"`);
-    } else {
-      propList.push(`class="${renderClass(className)}"`);
-    }
+    const classes = new Set(
+      Array.isArray(className)
+        ? className.map(renderClass)
+        : [renderClass(className)],
+    );
+    propList.push(`class="${Array.from(classes.values()).join(' ')}"`);
   }
 
   const propsString = propList.filter(Boolean).join(' ');
