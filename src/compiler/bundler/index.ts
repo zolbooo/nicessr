@@ -45,10 +45,13 @@ export class Bundler extends EventEmitter {
     }
 
     const { stats } = result;
-    for (const buildStats of stats) {
+    for (let i = 0; i < stats.length; i += 1) {
+      const buildStats = stats[i];
       if (buildStats.compilation.errors?.length > 0) {
         console.error('⛔️\tThere are errors occurred during the build:');
-        buildStats.compilation.errors.forEach((err) => console.error(err));
+        buildStats.compilation.errors.forEach((buildError) =>
+          console.error(buildError),
+        );
         return;
       }
     }

@@ -17,10 +17,10 @@ async function start() {
     process.exit(1);
   }
 
-  const resolvePage = (path: string) => {
-    if (path.endsWith('/')) return buildManifest[`${path}index`] ?? null;
-    if (buildManifest[path]) return buildManifest[path] ?? null;
-    return buildManifest[`${path}/index`] ?? null;
+  const resolvePage = (url: string) => {
+    if (url.endsWith('/')) return buildManifest[`${url}index`] ?? null;
+    if (buildManifest[url]) return buildManifest[url] ?? null;
+    return buildManifest[`${url}/index`] ?? null;
   };
 
   const port = Number(process.env.PORT) || 9000;
