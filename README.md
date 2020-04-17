@@ -16,16 +16,6 @@ Simple server-side-rendering framework for static HTML generation. It lets you r
 - Run `npx nicessr`
 - Open browser in `http://localhost:9000`
 
-## Setup (development)
-
-- Clone this repository
-- Install dependencies: `npm install`
-- Create `src/pages` directory
-- Create some `.js` or `.jsx` file inside
-- Run `npm run dev`
-- Open browser in `http://localhost:9000`
-- Edit code, server or pages will reload automatically
-
 ## Usage
 
 You should create pages under `src/pages` directory. Page file should look like this:
@@ -207,7 +197,7 @@ function Home() {
 
 ## Contributing
 
-All PRs and issues are welcome!
+Check `CONTRIBUTING.md`
 
 ## Under the hood
 
