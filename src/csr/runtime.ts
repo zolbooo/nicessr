@@ -2,6 +2,7 @@ import { isRef, Ref } from '.';
 import { Fiber, FiberFn } from './jsx/vdom';
 import { flattenFragments } from './jsx/jsx-runtime';
 import { isSupportedEvent } from './events';
+import { handleError, injectErrorHandler, AnyFunction } from './errors';
 
 export function useAutoReload() {
   const updateHandler = (event) =>
@@ -44,7 +45,10 @@ function attachProps(realRoot: Node, virtualRoot: Fiber) {
 
       if (typeof value !== 'function') return;
       if (key === 'onMount')
-        onMountQueue.push([realRoot, value as (node: Node) => void]);
+        onMountQueue.push([
+          realRoot,
+          injectErrorHandler(value as (node: Node) => void),
+        ]);
       else {
         if (process.env.NODE_ENV === 'development') {
           if (!isSupportedEvent(key)) {
@@ -53,7 +57,11 @@ function attachProps(realRoot: Node, virtualRoot: Fiber) {
             );
           }
         }
-        realRoot.addEventListener(key, value as () => void);
+
+        realRoot.addEventListener(
+          key,
+          injectErrorHandler(value as AnyFunction),
+        );
       }
     },
   );
@@ -65,16 +73,22 @@ function attachProps(realRoot: Node, virtualRoot: Fiber) {
 
 export function hydrate(rendererFn: FiberFn) {
   if (typeof document === 'undefined') return;
-  const renderedTree = flattenFragments(
-    rendererFn(JSON.parse((window as any).__nicessr_initial_props__)) as Fiber,
-  );
-  const hydratedRoot = document.getElementById('__nicessr__root__');
-
-  if (Array.isArray(renderedTree))
-    renderedTree.forEach((fiber, i) =>
-      attachProps(hydratedRoot.childNodes[i], fiber),
+  try {
+    const renderedTree = flattenFragments(
+      rendererFn(
+        JSON.parse((window as any).__nicessr_initial_props__),
+      ) as Fiber,
     );
-  else attachProps(hydratedRoot.childNodes[0], renderedTree);
+    const hydratedRoot = document.getElementById('__nicessr__root__');
+
+    if (Array.isArray(renderedTree))
+      renderedTree.forEach((fiber, i) =>
+        attachProps(hydratedRoot.childNodes[i], fiber),
+      );
+    else attachProps(hydratedRoot.childNodes[0], renderedTree);
+  } catch (err) {
+    if (process.env.NODE_ENV !== 'production') handleError(err);
+  }
 }
 
 export function clientEntrypoint() {
@@ -89,6 +103,14 @@ export function clientEntrypoint() {
     }, 0);
   };
 
+  if (process.env.NODE_ENV === 'development') {
+    const {
+      error: registerErrorHandler,
+      unhandledRejection: registerUnhandledRejectionHandler,
+    } = require('@pmmmwh/react-refresh-webpack-plugin/src/runtime/errorEventHandlers');
+    registerErrorHandler(handleError);
+    registerUnhandledRejectionHandler(handleError);
+  }
   if (
     document.readyState === 'complete' ||
     document.readyState === 'interactive'
