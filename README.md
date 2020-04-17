@@ -13,10 +13,18 @@ Simple server-side-rendering framework for static HTML generation. It lets you r
 - Install nicessr: `npm install nicessr`
 - Create `src/pages` directory
 - Create some `.js` or `.jsx` file inside
-- Run `npx nicessr`
+- Run `npx nicessr start`
 - Open browser in `http://localhost:9000`
 
 ## Usage
+
+### Available commands
+
+- `start`: Start development server with auto reloading
+- `build`: Build production bundle
+- `serve`: Serve production bundle (**note**: You should run `build` command before `serve`)
+
+### Examples
 
 You should create pages under `src/pages` directory. Page file should look like this:
 
