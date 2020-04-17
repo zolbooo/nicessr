@@ -25,6 +25,12 @@ export async function getAppContext(): Promise<any> {
         appContext.entrypoint,
       ));
     appContext.context = (await appContext.module?.default?.()) ?? {};
+
+    if ('req' in appContext.context || 'res' in appContext.context) {
+      console.warn(
+        '⚠️\tWarning: app context has req or res props. They will be overriden by request objects in getInitialProps function.',
+      );
+    }
   }
   return appContext.context;
 }
