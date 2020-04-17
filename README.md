@@ -2,6 +2,8 @@
 
 ![npm](https://img.shields.io/npm/v/nicessr)
 ![GitHub last commit](https://img.shields.io/github/last-commit/zolbooo/nicessr)
+[![commitizen friendly](https://img.shields.io/badge/commitizen-friendly-brightgreen.svg)](http://commitizen.github.io/cz-cli/)
+[![code style: prettier](https://img.shields.io/badge/code_style-prettier-ff69b4.svg)](https://github.com/prettier/prettier)
 
 Nicessr - ES6-based simple framework for server-side-rendering
 
