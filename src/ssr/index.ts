@@ -16,7 +16,7 @@ export type PageBundleInfo = {
 export async function renderEntrypoint({
   ctx,
   entrypoint,
-}: PageBundleInfo): Promise<{ root: Fiber; initialProps: string }> {
+}: PageBundleInfo): Promise<{ root: Fiber; initialProps: string } | null> {
   try {
     if (entrypoint.length !== 1) {
       throw Error(
@@ -37,6 +37,15 @@ export async function renderEntrypoint({
         ...ctx,
         ...(await getAppContext()),
       })) ?? {};
+
+    if (typeof page.default !== 'function') {
+      throw Error(
+        `Check default export of ${
+          ctx.req.path
+        }. Expected functional component, got ${page.default.toString()}`,
+      );
+    }
+
     const root = page.default(initialProps);
     if (!isFiber(root)) {
       throw Error(`Expected fiber to be rendered, got ${root.toString()}`);
