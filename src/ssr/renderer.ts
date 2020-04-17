@@ -4,10 +4,11 @@ import { flattenFragments } from '../csr/jsx/jsx-runtime';
 import { Bundle } from '../compiler/bundler';
 import { renderFiber } from './fiber';
 import { renderEntrypoint } from '.';
+import { renderStylesheets } from './styles';
 
 const pageTemplate = `<!DOCTYPE html>
 <html>
-  <head></head>
+  <head>{{STYLESHEETS}}</head>
   <body>
     <div id="__nicessr__root__">{{RENDERED_MARKUP}}</div>
     <script>window.__nicessr_initial_props__ = '{{INITIAL_PROPS}}'</script>
@@ -28,6 +29,7 @@ export async function renderPage(
   const renderedTree = flattenFragments(root);
 
   return pageTemplate
+    .replace('{{STYLESHEETS}}', renderStylesheets(renderedTree))
     .replace(
       '{{ENTRYPOINTS}}',
       bundle.client

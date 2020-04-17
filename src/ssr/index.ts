@@ -1,8 +1,8 @@
 import path from 'path';
 
 import { buildPathSSR } from '../compiler';
-import { RequestContext } from '../csr';
 import { Fiber, isFiber } from '../csr/jsx/vdom';
+import { css, RequestContext } from '../csr';
 
 import { getAppContext } from './appContext';
 
@@ -25,6 +25,7 @@ export async function renderEntrypoint({
       );
     }
 
+    globalThis.css = css;
     const page = require(path.join(buildPathSSR, entrypoint[0]));
 
     const initialProps =

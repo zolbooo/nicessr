@@ -69,6 +69,8 @@ function attachProps(realRoot: Node, virtualRoot: Fiber) {
 
 export function clientEntrypoint() {
   if (typeof document === 'undefined') return;
+  (window as any).css = () => {};
+
   const onLoad = () => {
     if (process.env.NODE_ENV === 'development') useAutoReload();
 
