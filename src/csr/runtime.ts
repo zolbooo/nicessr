@@ -1,6 +1,7 @@
 import { isRef, Ref } from '.';
 import { Fiber, FiberFn } from './jsx/vdom';
 import { flattenFragments } from './jsx/jsx-runtime';
+import { isSupportedEvent } from './events';
 
 export function useAutoReload() {
   const updateHandler = (event) =>
@@ -44,7 +45,16 @@ function attachProps(realRoot: Node, virtualRoot: Fiber) {
       if (typeof value !== 'function') return;
       if (key === 'onMount')
         onMountQueue.push([realRoot, value as (node: Node) => void]);
-      else realRoot.addEventListener(key, value as () => void);
+      else {
+        if (process.env.NODE_ENV === 'development') {
+          if (!isSupportedEvent(key)) {
+            throw Error(
+              `Unsupported event is being attached to element: ${key}`,
+            );
+          }
+        }
+        realRoot.addEventListener(key, value as () => void);
+      }
     },
   );
 
