@@ -37,7 +37,7 @@ function renderProps({
     if (typeof value !== 'number' && typeof value !== 'string') return '';
 
     if (value.toString().indexOf('"') !== -1)
-      throw Error(`Invariant violation: prop values should not contain quotes`);
+      throw Error('Invariant violation: prop values should not contain quotes');
     return `${propName}="${value}"`;
   });
 
@@ -51,7 +51,7 @@ function renderProps({
   }
 
   const propsString = propList.filter(Boolean).join(' ');
-  return propsString ? ' ' + propsString : '';
+  return propsString ? ` ${propsString}` : '';
 }
 
 export function renderFiber(fiber: FiberNode | FiberNode[]): string {

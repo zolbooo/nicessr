@@ -51,7 +51,7 @@ export const createCompiler = (
         },
         plugins: [
           new InjectPlugin(
-            () => `require('nicessr/dist/csr/runtime').clientEntrypoint()`,
+            () => "require('nicessr/dist/csr/runtime').clientEntrypoint()",
             {
               entryOrder: ENTRY_ORDER.First,
             },

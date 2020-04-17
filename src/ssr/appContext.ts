@@ -9,7 +9,7 @@ export type AppContextData = {
   entrypoint: string | null;
 };
 
-let appContext: AppContextData = {
+const appContext: AppContextData = {
   entrypoint: null,
   context: null,
   module: {},
@@ -18,7 +18,7 @@ let appContext: AppContextData = {
 export async function getAppContext(): Promise<any> {
   if (appContext.entrypoint !== appContextBundleRef.current[0]) {
     await appContext.module?.dispose?.(appContext.context);
-    appContext.entrypoint = appContextBundleRef.current[0];
+    [appContext.entrypoint] = appContextBundleRef.current;
     if (appContext.entrypoint)
       appContext.module = require(path.join(
         buildPathSSR,

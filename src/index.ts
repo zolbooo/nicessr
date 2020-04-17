@@ -26,7 +26,7 @@ async function bootstrap() {
       newBundle = { ...newBundle, ...event.bundle };
       if ((newBundle.client && newBundle.ssr) || 'appContext' in event.bundle) {
         res.write(`id: ${Math.random()}\n`);
-        res.write(`data: {"type": "update"}\n\n`);
+        res.write('data: {"type": "update"}\n\n');
         newBundle = { client: null, ssr: null };
       }
     };

@@ -12,7 +12,7 @@ export const resolveExtensions = ['.js', '.jsx'];
  * resolveExtension('account/balance.jsx'); // ['account/balance', 'jsx']
  */
 export function resolveExtension(path: string): [string, string] | null {
-  for (let extension of resolveExtensions) {
+  for (const extension of resolveExtensions) {
     if (path.endsWith(extension))
       return [
         path.slice(0, path.length - extension.length),
@@ -46,7 +46,7 @@ export async function resolveEntrypoint(
     return null;
   }
 
-  for (let extension of resolveExtensions) {
+  for (const extension of resolveExtensions) {
     if (
       !entrypoint.endsWith('/') &&
       (await existsPromise(
@@ -56,11 +56,11 @@ export async function resolveEntrypoint(
       return entrypoint + extension;
     if (
       await existsPromise(
-        path.join(pagesRoot, entrypoint.slice(1), 'index' + extension),
+        path.join(pagesRoot, entrypoint.slice(1), `index${extension}`),
       )
     )
       return `${
-        entrypoint.endsWith('/') ? entrypoint : entrypoint + '/'
+        entrypoint.endsWith('/') ? entrypoint : `${entrypoint}/`
       }index${extension}`;
   }
 

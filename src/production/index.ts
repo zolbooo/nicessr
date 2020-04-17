@@ -1,5 +1,3 @@
-process.env.NODE_ENV = 'production';
-
 import fs from 'fs';
 import path from 'path';
 import merge from 'lodash.merge';
@@ -55,7 +53,7 @@ const productionCompiler = ({ ssr, client }) =>
         },
         plugins: [
           new InjectPlugin(
-            () => `require('nicessr/dist/csr/runtime').clientEntrypoint()`,
+            () => "require('nicessr/dist/csr/runtime').clientEntrypoint()",
             {
               entryOrder: ENTRY_ORDER.First,
             },
