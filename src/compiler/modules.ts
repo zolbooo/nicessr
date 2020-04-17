@@ -17,7 +17,12 @@ const modules: (isServer: boolean) => webpack.Module = (isServer) => ({
                 importSource: 'nicessr/dist/csr/jsx',
               },
             ],
-            ...(isServer ? [] : [require('./babel/strip-get-initial-props')]),
+            ...(isServer
+              ? []
+              : [
+                  require('./babel/strip-get-initial-props'),
+                  require('./babel/strip-css-on-client'),
+                ]),
           ],
         },
       },
