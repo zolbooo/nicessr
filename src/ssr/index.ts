@@ -16,7 +16,9 @@ export type PageBundleInfo = {
 export async function renderEntrypoint({
   ctx,
   entrypoint,
-}: PageBundleInfo): Promise<{ root: Fiber; initialProps: string } | null> {
+}: PageBundleInfo): Promise<
+  { root: Fiber; initialProps: string } | { root: null; initialProps: Error }
+> {
   try {
     if (entrypoint.length !== 1) {
       throw Error(
@@ -42,7 +44,9 @@ export async function renderEntrypoint({
       throw Error(
         `Check default export of ${
           ctx.req.path
-        }. Expected functional component, got ${page.default.toString()}`,
+        }: expected functional component, got ${
+          page.default?.toString?.() || page.default
+        }`,
       );
     }
 
@@ -55,6 +59,6 @@ export async function renderEntrypoint({
   } catch (err) {
     console.error(`⛔️ ${err.message}`);
     console.error(err.stack);
-    return null;
+    return { root: null, initialProps: err };
   }
 }

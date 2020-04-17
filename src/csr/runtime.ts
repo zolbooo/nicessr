@@ -1,5 +1,5 @@
 import { isRef } from '.';
-import { handleError } from './errors';
+import { handleError, SSRError } from './errors';
 import { Fiber, FiberFn } from './jsx/vdom';
 import { flattenFragments } from './jsx/jsx-runtime';
 import { attachEventHandlers } from './events';
@@ -53,9 +53,7 @@ export function hydrate(rendererFn: FiberFn) {
   if (typeof document === 'undefined') return;
   try {
     const renderedTree = flattenFragments(
-      rendererFn(
-        JSON.parse((window as any).__nicessr_initial_props__),
-      ) as Fiber,
+      rendererFn((window as any).__nicessr_initial_props__) as Fiber,
     );
     const hydratedRoot = document.getElementById('__nicessr__root__');
 
@@ -73,7 +71,11 @@ export function clientEntrypoint() {
   if (typeof document === 'undefined') return;
 
   const onLoad = () => {
-    if (process.env.NODE_ENV === 'development') useAutoReload();
+    if (process.env.NODE_ENV === 'development') {
+      useAutoReload();
+      const ssrError = (window as any).__nicessr_ssr_error__ ?? null;
+      if (ssrError) throw new SSRError(ssrError);
+    }
 
     hydrate((window as any).default);
     setTimeout(() => {
