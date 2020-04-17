@@ -1,5 +1,6 @@
 # nicessr
 
+![Build and deploy](https://github.com/zolbooo/nicessr/workflows/Build%20and%20deploy/badge.svg?branch=master)
 ![npm](https://img.shields.io/npm/v/nicessr)
 ![GitHub last commit](https://img.shields.io/github/last-commit/zolbooo/nicessr)
 [![commitizen friendly](https://img.shields.io/badge/commitizen-friendly-brightgreen.svg)](http://commitizen.github.io/cz-cli/)
