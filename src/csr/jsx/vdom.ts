@@ -7,6 +7,7 @@ export type FiberProps<RefType = any> = {
   ref?: Ref<RefType>;
   class?: string | CSSReference | (string | CSSReference)[];
   children?: FiberNode | FiberNode[];
+  onMount?: (node: Node) => void;
 };
 
 export type FiberNode = string | number | boolean | Fiber;

@@ -1,8 +1,8 @@
-import { isRef, Ref } from '.';
+import { isRef } from '.';
+import { handleError } from './errors';
 import { Fiber, FiberFn } from './jsx/vdom';
 import { flattenFragments } from './jsx/jsx-runtime';
-import { isSupportedEvent } from './events';
-import { handleError, injectErrorHandler, AnyFunction } from './errors';
+import { attachEventHandlers } from './events';
 
 export function useAutoReload() {
   const updateHandler = (event) =>
@@ -39,33 +39,11 @@ function attachProps(realRoot: Node, virtualRoot: Fiber) {
   }
   if (virtualRoot.elementName === '#text') return;
 
-  Object.entries(virtualRoot.props as any).forEach(
-    ([key, value]: [string, Function | Ref<typeof realRoot>]) => {
-      if (key === 'ref') (value as Ref<typeof realRoot>).current = realRoot;
+  attachEventHandlers(realRoot, virtualRoot);
 
-      if (typeof value !== 'function') return;
-      if (key === 'onMount')
-        onMountQueue.push([
-          realRoot,
-          injectErrorHandler(value as (node: Node) => void),
-        ]);
-      else {
-        if (process.env.NODE_ENV === 'development') {
-          if (!isSupportedEvent(key)) {
-            throw Error(
-              `Unsupported event is being attached to element: ${key}`,
-            );
-          }
-        }
-
-        realRoot.addEventListener(
-          key,
-          injectErrorHandler(value as AnyFunction),
-        );
-      }
-    },
-  );
-
+  if (virtualRoot.props.onMount) {
+    onMountQueue.push([realRoot, virtualRoot.props.onMount]);
+  }
   (virtualRoot.props.children as Fiber[]).forEach((fiber, i) =>
     attachProps(realRoot.childNodes[i], fiber),
   );

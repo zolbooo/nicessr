@@ -1,3 +1,6 @@
+import { Ref } from '.';
+import { Fiber } from './jsx/vdom';
+
 /** List of events mapped to according html elements */
 const tagsForEvents: { [key: string]: string } = {
   select: 'input',
@@ -20,4 +23,25 @@ export function isSupportedEvent(eventName: string) {
   }
   el = null;
   return isSupported;
+}
+
+export function attachEventHandlers(realRoot: Node, virtualRoot: Fiber) {
+  Object.entries(virtualRoot.props as any).forEach(
+    ([key, value]: [string, Function | Ref<typeof realRoot>]) => {
+      if (key === 'ref') (value as Ref<typeof realRoot>).current = realRoot;
+
+      if (typeof value !== 'function') return;
+      if (key !== 'onMount') {
+        if (process.env.NODE_ENV === 'development') {
+          if (!isSupportedEvent(key)) {
+            throw Error(
+              `Unsupported event is being attached to element: ${key}`,
+            );
+          }
+        }
+
+        realRoot.addEventListener(key, value as () => void);
+      }
+    },
+  );
 }
