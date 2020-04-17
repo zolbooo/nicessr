@@ -4,7 +4,7 @@ const styles = new Map<string, string>();
 
 export function assignClass(css: string): string {
   const hash = sha256(css);
-  styles.set(hash, css.replace('__NICESSR__GENERATED_CLASS__', hash));
+  styles.set(hash, css);
   return hash;
 }
 
