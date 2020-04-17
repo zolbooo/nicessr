@@ -18,11 +18,11 @@ import { getEntrypointsFromStats } from '../compiler/bundler/stats';
 import { pagesRoot, allEntrypoints } from '../compiler/entrypoints';
 import { buildPathSSR, buildPathClient } from '../compiler';
 
-const productionCompiler = (entrypoints) =>
+const productionCompiler = ({ ssr, client }) =>
   webpack([
     merge(
       {
-        entry: entrypoints,
+        entry: ssr,
         devtool: false,
         output: {
           path: buildPathSSR,
@@ -37,7 +37,7 @@ const productionCompiler = (entrypoints) =>
     ),
     merge(
       {
-        entry: entrypoints,
+        entry: client,
         devtool: false,
         output: {
           path: buildPathClient,
@@ -70,7 +70,7 @@ const productionCompiler = (entrypoints) =>
 async function build() {
   await cleanup();
 
-  const entrypoints = (await allEntrypoints()).reduce(
+  const entrypointsSSR = (await allEntrypoints()).reduce(
     (entrypointMap, [page, extension]) => {
       return {
         ...entrypointMap,
@@ -79,11 +79,17 @@ async function build() {
     },
     {},
   );
+  const entrypointsClient = { ...entrypointsSSR };
+  delete entrypointsClient['/_app'];
 
   const {
     stats: [ssrStats, clientStats],
   } = await new Promise((resolve, reject) =>
-    productionCompiler(entrypoints).run((err, stats) => {
+    productionCompiler({
+      ssr: entrypointsSSR,
+      client: entrypointsClient,
+    }).run((err, stats) => {
+      console.log(err, stats.toString({ colors: true }));
       if (err) reject(err);
       resolve((stats as any) as { stats: [webpack.Stats, webpack.Stats] });
     }),
