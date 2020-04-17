@@ -1,8 +1,9 @@
 import path from 'path';
 
+import { css } from '../csr/css';
 import { buildPathSSR } from '../compiler';
 import { Fiber, isFiber } from '../csr/jsx/vdom';
-import { css, RequestContext } from '../csr';
+import { RequestContext } from '../csr';
 
 import { getAppContext } from './appContext';
 
