@@ -8,7 +8,7 @@ export function useRef<T>(initialValue?: T): Ref<T> {
 }
 
 export function isRef(ref: Ref<any>) {
-  return ref.__ref == __ref;
+  return ref.__ref === __ref;
 }
 
 export type RequestContext = {

@@ -1,4 +1,4 @@
-import { Bundle, Entrypoint } from '.';
+import type { Bundle, Entrypoint } from '.';
 
 export const appContextBundleRef: { current: Entrypoint } = { current: [] };
 export const clientBundles = new Map<string, Entrypoint>();

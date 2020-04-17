@@ -2,8 +2,8 @@ import fs from 'fs';
 import path from 'path';
 import webpack from 'webpack';
 
-import { pagesRoot, resolveExtension, resolveExtensions } from '../entrypoints';
 import { appContextBundleRef } from './bundles';
+import { pagesRoot, resolveExtension } from '../entrypoints';
 
 const activeEntrypoints = new Map<string, number>();
 
@@ -29,7 +29,7 @@ export function unref(entrypoint: string) {
 
 const getActiveEntrypoints = (prefix: string) => () =>
   Array.from(activeEntrypoints.entries())
-    .filter(([_, count]) => count > 0)
+    .filter((entry) => entry[1] > 0)
     .map(([page]) => page)
     .reduce(
       (entrypoints, entrypointFile) => ({

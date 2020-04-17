@@ -41,7 +41,7 @@ export function renderStylesheets(root: Fiber | Fiber[]) {
   usedClasses.forEach((classRef) => {
     const stylesheet = lookupClass(classRef.className);
 
-    for (let i = 1; i < classRef.className.length; i++) {
+    for (let i = 1; i < classRef.className.length; i += 1) {
       const shortClassName = classRef.className.slice(0, i);
       if (!fixedClasses.has(shortClassName)) {
         fixedClasses.set(
