@@ -2,6 +2,7 @@ import path from 'path';
 import express from 'express';
 
 import { renderPage } from '../ssr/renderer';
+import { appContextBundleRef } from 'src/compiler/bundler/bundles';
 
 async function start() {
   const buildManifest = require(path.join(
@@ -35,6 +36,8 @@ async function start() {
   app.get('*', async (req, res, next) => {
     const bundle = resolvePage(req.path);
     if (bundle === null) return next();
+
+    appContextBundleRef.current = bundle.appContext ?? [];
     const markup = await renderPage(req.path, { req, res }, bundle);
     res.status(200).send(markup);
   });
