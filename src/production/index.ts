@@ -89,7 +89,6 @@ async function build() {
       ssr: entrypointsSSR,
       client: entrypointsClient,
     }).run((err, stats) => {
-      console.log(err, stats.toString({ colors: true }));
       if (err) reject(err);
       resolve((stats as any) as { stats: [webpack.Stats, webpack.Stats] });
     }),
@@ -139,6 +138,9 @@ async function build() {
       },
     ),
   );
+
+  console.log(ssrStats.toString({ colors: true }));
+  console.log(clientStats.toString({ colors: true }));
 
   console.log(
     '✅\tCreated bundle successfully, created build manifest at .nicessr/build.manifest.json\n',
