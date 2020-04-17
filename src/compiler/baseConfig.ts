@@ -2,7 +2,6 @@ import path from 'path';
 import webpack from 'webpack';
 
 import TerserPlugin from 'terser-webpack-plugin';
-import { CleanWebpackPlugin } from 'clean-webpack-plugin';
 
 const isProduction = process.env.NODE_ENV === 'production';
 
