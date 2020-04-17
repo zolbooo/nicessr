@@ -34,6 +34,7 @@ export const createCompiler = (
         alias: {
           nicessr: path.join(__dirname, '..', '..'),
         },
+        extensions: ['.js', '.jsx'],
       },
       optimization: {
         usedExports: true,
@@ -65,6 +66,7 @@ export const createCompiler = (
           css: false as any,
           nicessr: path.join(__dirname, '..', '..'),
         },
+        extensions: ['.js', '.jsx'],
       },
       plugins: [
         new InjectPlugin(
