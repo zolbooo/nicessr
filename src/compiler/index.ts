@@ -20,6 +20,7 @@ export const createCompiler = (
     {
       mode: isProduction ? 'production' : 'development',
       entry: getEntrypoints('ssr:'),
+      stats: 'errors-warnings',
       watch: true,
       devtool: isProduction ? false : 'inline-source-map',
       output: {
@@ -47,6 +48,7 @@ export const createCompiler = (
       mode: isProduction ? 'production' : 'development',
       entry: getEntrypoints('client:'),
       watch: true,
+      stats: 'errors-warnings',
       devtool: isProduction ? false : 'source-map',
       output: {
         path: buildPathClient,
