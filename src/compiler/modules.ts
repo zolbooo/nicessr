@@ -3,7 +3,7 @@ import webpack from 'webpack';
 const modules: (isServer: boolean) => webpack.Module = (isServer) => ({
   rules: [
     {
-      test: /\.m?js$/,
+      test: /\.jsx?$/,
       exclude: /node_modules/,
       use: {
         loader: 'babel-loader',
