@@ -40,7 +40,7 @@ export const createCompiler = (
         minimize: isProduction,
         minimizer: [new TerserPlugin()],
       },
-      plugins: [...(isProduction ? [new CleanWebpackPlugin()] : [])],
+      plugins: [new CleanWebpackPlugin()],
     },
     {
       mode: isProduction ? 'production' : 'development',
@@ -73,7 +73,7 @@ export const createCompiler = (
             entryOrder: ENTRY_ORDER.First,
           },
         ),
-        ...(isProduction ? [new CleanWebpackPlugin()] : []),
+        new CleanWebpackPlugin(),
       ],
     },
   ]);
