@@ -89,6 +89,16 @@ async function build() {
     }),
   );
 
+  if (
+    ssrStats.compilation.errors?.length > 0 ||
+    clientStats.compilation.errors?.length > 0
+  ) {
+    console.error('⛔️\tThere are errors occurred during the build:');
+    ssrStats.compilation.errors?.forEach((err) => console.error(err));
+    clientStats.compilation.errors?.forEach((err) => console.error(err));
+    process.exit(1);
+  }
+
   const ssrEntrypoints = getEntrypointsFromStats(ssrStats);
   const clientEntrypoints = getEntrypointsFromStats(clientStats);
 
