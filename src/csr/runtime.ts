@@ -6,8 +6,9 @@ export function useAutoReload() {
   const updateHandler = (event) =>
     JSON.parse(event.data).type === 'update' && document.location.reload();
   const eventSource = new EventSource(
-    '/.nicessr/auto-refresh?page=' +
-      encodeURIComponent(document.location.pathname),
+    `/.nicessr/auto-refresh?page=${encodeURIComponent(
+      document.location.pathname,
+    )}`,
   );
 
   eventSource.addEventListener('message', updateHandler, false);
@@ -16,20 +17,6 @@ export function useAutoReload() {
     eventSource.close();
     setTimeout(useAutoReload, 500);
   });
-}
-
-export function hydrate(rendererFn: FiberFn) {
-  if (typeof document === 'undefined') return;
-  const renderedTree = flattenFragments(
-    rendererFn(JSON.parse((window as any).__nicessr_initial_props__)) as Fiber,
-  );
-  const hydratedRoot = document.getElementById('__nicessr__root__');
-
-  if (Array.isArray(renderedTree))
-    renderedTree.forEach((fiber, i) =>
-      attachProps(hydratedRoot.childNodes[i], fiber),
-    );
-  else attachProps(hydratedRoot.childNodes[0], renderedTree);
 }
 
 const onMountQueue: [Node, (element: Node) => void][] = [];
@@ -61,15 +48,27 @@ function attachProps(realRoot: Node, virtualRoot: Fiber) {
     },
   );
 
-  const childNodes = (virtualRoot.props.children as Fiber[]).filter(
-    (child) => child.elementName !== '#text',
+  (virtualRoot.props.children as Fiber[]).forEach((fiber, i) =>
+    attachProps(realRoot.childNodes[i], fiber),
   );
-  childNodes.forEach((fiber, i) => attachProps(realRoot.childNodes[i], fiber));
+}
+
+export function hydrate(rendererFn: FiberFn) {
+  if (typeof document === 'undefined') return;
+  const renderedTree = flattenFragments(
+    rendererFn(JSON.parse((window as any).__nicessr_initial_props__)) as Fiber,
+  );
+  const hydratedRoot = document.getElementById('__nicessr__root__');
+
+  if (Array.isArray(renderedTree))
+    renderedTree.forEach((fiber, i) =>
+      attachProps(hydratedRoot.childNodes[i], fiber),
+    );
+  else attachProps(hydratedRoot.childNodes[0], renderedTree);
 }
 
 export function clientEntrypoint() {
   if (typeof document === 'undefined') return;
-  (window as any).css = () => {};
 
   const onLoad = () => {
     if (process.env.NODE_ENV === 'development') useAutoReload();
