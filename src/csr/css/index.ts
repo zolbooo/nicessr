@@ -14,7 +14,16 @@ function renderStyles(styleParts: string[], tags: StyledTag[]) {
 const __css_reference = '__nicessr_css_reference__';
 
 export type StyledTag = string | number;
-export const css = (styleParts: string[], ...tags: StyledTag[]) => {
+
+export type CSSReference = {
+  __css_reference: typeof __css_reference;
+  className: string;
+};
+
+export const css = (
+  styleParts: string[],
+  ...tags: StyledTag[]
+): CSSReference => {
   const rawStyles = stringify(
     parse(`.__NICESSR__GENERATED_CLASS__ {
       ${renderStyles(styleParts, tags)}
