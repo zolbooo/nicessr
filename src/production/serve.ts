@@ -2,7 +2,7 @@ import path from 'path';
 import express from 'express';
 
 import { renderPage } from '../ssr/renderer';
-import { appContextBundleRef } from 'src/compiler/bundler/bundles';
+import { appContextBundleRef } from '../compiler/bundler/bundles';
 
 async function start() {
   const buildManifest = require(path.join(
