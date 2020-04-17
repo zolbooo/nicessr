@@ -1,17 +1,20 @@
 import path from 'path';
 import express from 'express';
 
+import { cleanup } from './util';
 import { renderPage } from './ssr/renderer';
 import { Bundler, BuildEvent, Bundle } from './compiler/bundler';
 
 async function bootstrap() {
+  const bundler = new Bundler();
+  await cleanup();
+
   const port = Number(process.env.PORT) || 9000;
   const app = express();
   const server = app.listen(port, '0.0.0.0', () =>
     console.log(`🚀\tServer running on http://0.0.0.0:${port}`),
   );
 
-  const bundler = new Bundler();
   app.use('/.nicessr/auto-refresh', (req, res) => {
     let newBundle: Partial<Bundle> = {
       appContext: [],

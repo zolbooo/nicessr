@@ -24,7 +24,6 @@ const baseConfig: webpack.Configuration = {
     minimize: isProduction,
     minimizer: [new TerserPlugin()],
   },
-  plugins: [new CleanWebpackPlugin()],
 };
 
 export default baseConfig;
