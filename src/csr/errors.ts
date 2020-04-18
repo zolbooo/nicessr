@@ -19,10 +19,3 @@ export function injectErrorHandler(fn: AnyFunction): AnyFunction {
   }
   return fn;
 }
-
-export class SSRError extends Error {
-  constructor(data: { name: string; message: string; stack: string }) {
-    super();
-    Object.assign(this, data);
-  }
-}

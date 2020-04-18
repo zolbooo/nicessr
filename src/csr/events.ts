@@ -12,7 +12,7 @@ const tagsForEvents: { [key: string]: string } = {
   abort: 'img',
 };
 
-export function isSupportedEvent(eventName: string) {
+function isSupportedEvent(eventName: string) {
   let el: HTMLElement | null = document.createElement(
     tagsForEvents[eventName] || 'div',
   );

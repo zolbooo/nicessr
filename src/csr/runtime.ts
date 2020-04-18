@@ -1,5 +1,5 @@
 import { isRef } from '.';
-import { handleError, SSRError } from './errors';
+import { handleError } from './errors';
 import { Fiber, FiberFn } from './jsx/vdom';
 import { flattenFragments } from './jsx/jsx-runtime';
 import { attachEventHandlers } from './events';
@@ -63,7 +63,7 @@ export function hydrate(rendererFn: FiberFn) {
       );
     else attachProps(hydratedRoot.childNodes[0], renderedTree);
   } catch (err) {
-    if (process.env.NODE_ENV !== 'production') handleError(err);
+    if (process.env.NODE_ENV === 'development') handleError(err);
   }
 }
 
@@ -74,7 +74,7 @@ export function clientEntrypoint() {
     if (process.env.NODE_ENV === 'development') {
       useAutoReload();
       const ssrError = (window as any).__nicessr_ssr_error__ ?? null;
-      if (ssrError) throw new SSRError(ssrError);
+      if (ssrError) throw Object.assign(new Error(), ssrError);
     }
 
     hydrate((window as any).default);

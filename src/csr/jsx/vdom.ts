@@ -38,10 +38,12 @@ function toFiber(node: FiberNode, parent: Fiber | null): Fiber {
     };
   }
 
-  if (!isFiber(node))
-    throw Error(
-      `Invariant violation: expected string, number, bool or Node, got ${typeof node}`,
-    );
+  if (process.env.NODE_ENV === 'development') {
+    if (!isFiber(node))
+      throw Error(
+        `Invariant violation: expected string, number, bool or Node, got ${typeof node}`,
+      );
+  }
 
   return node;
 }
@@ -63,27 +65,31 @@ export function h<P = FiberProps>(
       children: unpackChildren((props as FiberProps)?.children),
     });
     if (typeof result === 'object') {
-      if (!isFiber(result)) {
-        throw Error(`Invariant violation: expected Fiber, got ${result}`);
+      if (process.env.NODE_ENV === 'development') {
+        if (!isFiber(result)) {
+          throw Error(`Invariant violation: expected Fiber, got ${result}`);
+        }
       }
       return result;
     }
     return toFiber(result, null);
   }
 
-  if (
-    typeof element !== 'string' ||
-    !/^(Fragment)|[a-z]([a-z0-9-]+)?$/.test(element)
-  )
-    throw Error(
-      `Invariant violation: expected correct element name (alphanumeric charachers or -), got ${element.toString()}`,
-    );
+  if (process.env.NODE_ENV === 'development') {
+    if (
+      typeof element !== 'string' ||
+      !/^(Fragment)|[a-z]([a-z0-9-]+)?$/.test(element)
+    )
+      throw Error(
+        `Invariant violation: expected correct element name (alphanumeric charachers or -), got ${element.toString()}`,
+      );
 
-  if (element === 'style') {
-    throw Error('<style> tag is prohibited. Use css`` syntax instead');
-  }
-  if (element === 'script') {
-    throw Error('<script> tag is prohibited');
+    if (element === 'style') {
+      throw Error('<style> tag is prohibited. Use css`` syntax instead');
+    }
+    if (element === 'script') {
+      throw Error('<script> tag is prohibited');
+    }
   }
 
   const fiber: Fiber = {
@@ -97,8 +103,10 @@ export function h<P = FiberProps>(
       .flat(Infinity)
       .map((child) => {
         if (typeof child === 'object') {
-          if (!isFiber(child)) {
-            throw Error(`Invariant violation: expected Fiber, got ${child}`);
+          if (process.env.NODE_ENV === 'development') {
+            if (!isFiber(child)) {
+              throw Error(`Invariant violation: expected Fiber, got ${child}`);
+            }
           }
           return { ...child, parent: fiber };
         }
