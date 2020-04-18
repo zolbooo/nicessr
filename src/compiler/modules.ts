@@ -8,7 +8,12 @@ const modules: (isServer: boolean) => webpack.Module = (isServer) => ({
       use: {
         loader: 'babel-loader',
         options: {
-          presets: [['@babel/preset-env', { targets: { node: 'current' } }]],
+          presets: [
+            [
+              '@babel/preset-env',
+              { targets: isServer ? { node: '8' } : '>0.25%' },
+            ],
+          ],
           plugins: [
             [
               '@babel/plugin-transform-react-jsx',
