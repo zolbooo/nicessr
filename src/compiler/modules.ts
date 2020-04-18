@@ -22,6 +22,9 @@ const modules: (isServer: boolean) => webpack.Module = (isServer) => ({
                 importSource: 'nicessr/dist/csr/jsx',
               },
             ],
+            ...(process.env.NODE_ENV === 'production'
+              ? [require('./babel/strip-dev-code')]
+              : []),
             ...(isServer
               ? []
               : [
