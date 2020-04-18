@@ -167,6 +167,8 @@ export default Home;
 
 ## Advanced
 
+### App context
+
 Value returned from `getInitialProps` function will be passed as first argument to page component.
 
 **Warning**: currenly, all `getInitialProps` function exports are removed from client-side bundles.
@@ -209,6 +211,14 @@ function Home({ items }) {
 
 export default Home;
 ```
+
+### Compilator
+
+There are extra babel plugins ran on builds (check `src/compiler/babel/`):
+
+- `strip-css-on-client`: Removes `css` tagged template literals on client bundle
+- `strip-get-initial-props`: Removes `getInitialProps` exported functions from **all** module on client bundle
+- `strip-dev-code`: Removes `if (process.env.NODE_ENV === 'development')` statements on production bundle (both SSR and client bundles)
 
 ## Contributing
 
