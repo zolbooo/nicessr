@@ -14,6 +14,7 @@ const baseConfig: webpack.Configuration = {
   },
   resolve: {
     alias: {
+      '@': path.join(process.cwd(), 'src'),
       nicessr: path.join(__dirname, '..', '..'),
     },
     extensions: ['.js', '.jsx'],
