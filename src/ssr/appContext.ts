@@ -11,6 +11,7 @@ export type AppContextData = {
   context: any;
   functions: { [page: string]: FunctionMap | undefined };
   entrypoint: string | null;
+  functionEntrypoints: { [page: string]: string | undefined };
 };
 
 const appContext: AppContextData = {
@@ -18,9 +19,10 @@ const appContext: AppContextData = {
   context: null,
   functions: {},
   entrypoint: null,
+  functionEntrypoints: {},
 };
 
-export async function getAppContext(): Promise<any> {
+export async function getRawAppContext(): Promise<AppContextData> {
   if (appContext.entrypoint !== appContextBundleRef.current[0]) {
     await appContext.module?.dispose?.(appContext.context);
     [appContext.entrypoint] = appContextBundleRef.current;
@@ -38,5 +40,9 @@ export async function getAppContext(): Promise<any> {
       }
     }
   }
-  return appContext.context;
+  return appContext;
+}
+
+export async function getAppContext() {
+  return (await getRawAppContext()).context;
 }
