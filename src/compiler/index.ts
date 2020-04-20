@@ -12,6 +12,7 @@ const isProduction = process.env.NODE_ENV === 'production';
 
 export const buildPathSSR = path.join(process.cwd(), '.nicessr', 'ssr');
 export const buildPathClient = path.join(process.cwd(), '.nicessr', 'build');
+export const staticAssetsPath = path.join(process.cwd(), '.nicessr', 'static');
 
 export const createCompiler = (
   getEntrypoints: (prefix: string) => () => { [key: string]: string },
