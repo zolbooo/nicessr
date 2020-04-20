@@ -53,13 +53,12 @@ async function bootstrap() {
   app.get('*', async (req, res, next) => {
     const bundle = await bundler.buildOnce(req.path);
     if (bundle === null) return next();
-
-    if (req.method === 'POST') {
-      return handleFunctionInvocation(req, res, bundle);
-    }
-
     const markup = await renderPage(req.path, { req, res }, bundle);
     res.status(200).send(markup);
+  });
+  app.post('*', async (req, res) => {
+    const bundle = await bundler.buildOnce(req.path);
+    if (bundle) handleFunctionInvocation(req, res, bundle);
   });
 
   app.use(express.static(path.join(process.cwd(), 'public')));
