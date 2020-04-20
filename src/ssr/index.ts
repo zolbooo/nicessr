@@ -6,7 +6,7 @@ import { Fiber, isFiber } from '../csr/jsx/vdom';
 import { RequestContext } from '../csr';
 
 import { getAppContext } from './appContext';
-import { requireNoCache } from '../utils/require';
+import { loadEntrypoint } from './functions/load';
 
 export type PageBundleInfo = {
   ctx: RequestContext;
@@ -34,24 +34,16 @@ export async function renderEntrypoint({
     const globalStyles = [];
     globalThis.globalCSS = (style) => globalStyles.push(style);
 
-    const pageModule = path.join(buildPathSSR, entrypoint[0]);
-    const page = requireNoCache(pageModule);
+    const page = await loadEntrypoint(
+      ctx.req.path,
+      path.join(buildPathSSR, entrypoint[0]),
+    );
 
     const initialProps =
       (await page.getInitialProps?.({
         ...ctx,
         ...(await getAppContext()),
       })) ?? {};
-
-    if (typeof page.default !== 'function') {
-      throw Error(
-        `Check default export of ${
-          ctx.req.path
-        }: expected functional component, got ${
-          page.default?.toString?.() || page.default
-        }`,
-      );
-    }
 
     const root = page.default(initialProps);
     if (!isFiber(root)) {
