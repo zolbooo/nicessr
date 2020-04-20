@@ -6,6 +6,7 @@ import { Fiber, isFiber } from '../csr/jsx/vdom';
 import { RequestContext } from '../csr';
 
 import { getAppContext } from './appContext';
+import { requireNoCache } from '../utils/require';
 
 export type PageBundleInfo = {
   ctx: RequestContext;
@@ -34,8 +35,7 @@ export async function renderEntrypoint({
     globalThis.globalCSS = (style) => globalStyles.push(style);
 
     const pageModule = path.join(buildPathSSR, entrypoint[0]);
-    delete require.cache[require.resolve(pageModule)];
-    const page = require(pageModule);
+    const page = requireNoCache(pageModule);
 
     const initialProps =
       (await page.getInitialProps?.({
