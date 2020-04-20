@@ -10,7 +10,7 @@ import webpackModules from '../compiler/modules';
 import webpackBaseConfig from '../compiler/baseConfig';
 
 import { Bundle } from '../compiler/bundler';
-import { cleanup } from '../util';
+import { cleanup } from '../utils/cleanup';
 import { getBundles } from './bundles';
 import { getEntrypointsFromStats } from '../compiler/bundler/stats';
 import { pagesRoot, allEntrypoints } from '../compiler/entrypoints';

@@ -1,7 +1,7 @@
 import path from 'path';
 import express from 'express';
 
-import { cleanup } from './util';
+import { cleanup } from './utils/cleanup';
 import { renderPage } from './ssr/renderer';
 import { Bundler, BuildEvent, Bundle } from './compiler/bundler';
 
