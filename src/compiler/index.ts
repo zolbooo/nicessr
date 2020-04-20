@@ -27,7 +27,7 @@ export const createCompiler = (
         },
         module: webpackModules(true),
         target: 'node',
-        externals: [nodeExternals()],
+        externals: [nodeExternals({ whitelist: [/\.css$/] })],
       },
       webpackBaseConfig,
     ),
