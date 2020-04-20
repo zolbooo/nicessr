@@ -35,6 +35,7 @@ const modules: (isServer: boolean) => webpack.Module = (isServer) => ({
             ...(isServer
               ? []
               : [
+                  require('./babel/strip-server-side-functions'),
                   require('./babel/strip-get-initial-props'),
                   require('./babel/strip-css-on-client'),
                 ]),
