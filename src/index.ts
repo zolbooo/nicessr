@@ -2,7 +2,7 @@ import path from 'path';
 import express from 'express';
 
 import { cleanup } from './utils/cleanup';
-import { renderPage } from './ssr/renderer';
+import { renderPage } from './ssr/markup';
 import { Bundler, BuildEvent, Bundle } from './compiler/bundler';
 import { handleRequest as handleFunctionInvocation } from './ssr/functions';
 

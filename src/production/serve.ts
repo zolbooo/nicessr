@@ -1,7 +1,7 @@
 import path from 'path';
 import express from 'express';
 
-import { renderPage } from '../ssr/renderer';
+import { renderPage } from '../ssr/markup';
 import { appContextBundleRef } from '../compiler/bundler/bundles';
 
 async function start() {
