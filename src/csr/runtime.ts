@@ -4,23 +4,6 @@ import { Fiber, FiberFn } from './jsx/vdom';
 import { flattenFragments } from './jsx/jsx-runtime';
 import { attachEventHandlers } from './events';
 
-export function useAutoReload() {
-  const updateHandler = (event) =>
-    JSON.parse(event.data).type === 'update' && document.location.reload();
-  const eventSource = new EventSource(
-    `/.nicessr/auto-refresh?page=${encodeURIComponent(
-      document.location.pathname,
-    )}`,
-  );
-
-  eventSource.addEventListener('message', updateHandler, false);
-  eventSource.addEventListener('error', () => {
-    eventSource.removeEventListener('message', updateHandler);
-    eventSource.close();
-    setTimeout(useAutoReload, 500);
-  });
-}
-
 const onMountQueue: [Node, (element: Node) => void][] = [];
 function attachProps(realRoot: Node, virtualRoot: Fiber) {
   if (process.env.NODE_ENV === 'development') {
@@ -72,7 +55,7 @@ export function clientEntrypoint() {
 
   const onLoad = () => {
     if (process.env.NODE_ENV === 'development') {
-      useAutoReload();
+      require('./auto-reload').useAutoReload();
       const ssrError = (window as any).__nicessr_ssr_error__ ?? null;
       if (ssrError) throw Object.assign(new Error(), ssrError);
     }
