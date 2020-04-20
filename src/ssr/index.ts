@@ -6,6 +6,7 @@ import { Fiber, isFiber } from '../csr/jsx/vdom';
 import { RequestContext } from '../csr';
 
 import { getAppContext } from './appContext';
+import { listFunctions } from './functions';
 import { loadEntrypoint } from './functions/load';
 
 export type PageBundleInfo = {
@@ -58,7 +59,14 @@ export async function renderEntrypoint({
       throw Error(`Expected fiber to be rendered, got ${root.toString()}`);
     }
 
-    return { root, globalStyles, initialProps: JSON.stringify(initialProps) };
+    return {
+      root,
+      globalStyles,
+      initialProps: JSON.stringify({
+        ...initialProps,
+        functions: await listFunctions(ctx.req.path),
+      }),
+    };
   } catch (err) {
     console.error(`⛔️ ${err.message}`);
     console.error(err.stack);
