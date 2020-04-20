@@ -4,7 +4,7 @@ import { Fiber, FiberFn } from './jsx/vdom';
 import { flattenFragments } from './jsx/jsx-runtime';
 import { attachEventHandlers } from './events';
 
-const onMountQueue: [Node, (element: Node) => void][] = [];
+export const effectQueue: [Node, (element: Node) => void][] = [];
 function attachProps(realRoot: Node, virtualRoot: Fiber) {
   if (process.env.NODE_ENV === 'development') {
     if (
@@ -25,7 +25,7 @@ function attachProps(realRoot: Node, virtualRoot: Fiber) {
   attachEventHandlers(realRoot, virtualRoot);
 
   if (virtualRoot.props.onMount) {
-    onMountQueue.push([realRoot, virtualRoot.props.onMount]);
+    effectQueue.push([realRoot, virtualRoot.props.onMount]);
   }
   (virtualRoot.props.children as Fiber[]).forEach((fiber, i) =>
     attachProps(realRoot.childNodes[i], fiber),
@@ -48,36 +48,4 @@ export function hydrate(rendererFn: FiberFn) {
   } catch (err) {
     if (process.env.NODE_ENV === 'development') handleError(err);
   }
-}
-
-export function clientEntrypoint() {
-  if (typeof document === 'undefined') return;
-
-  const onLoad = () => {
-    if (process.env.NODE_ENV === 'development') {
-      require('./auto-reload').useAutoReload();
-      const ssrError = (window as any).__nicessr_ssr_error__ ?? null;
-      if (ssrError) throw Object.assign(new Error(), ssrError);
-    }
-
-    hydrate((window as any).default);
-    setTimeout(() => {
-      onMountQueue.forEach(([node, onMount]) => onMount(node));
-    }, 0);
-  };
-
-  if (process.env.NODE_ENV === 'development') {
-    const {
-      error: registerErrorHandler,
-      unhandledRejection: registerUnhandledRejectionHandler,
-    } = require('@pmmmwh/react-refresh-webpack-plugin/src/runtime/errorEventHandlers');
-    registerErrorHandler(handleError);
-    registerUnhandledRejectionHandler(handleError);
-  }
-  if (
-    document.readyState === 'complete' ||
-    document.readyState === 'interactive'
-  )
-    setTimeout(onLoad, 0);
-  else document.addEventListener('DOMContentLoaded', onLoad);
 }
