@@ -45,6 +45,14 @@ export async function renderEntrypoint({
         ...(await getAppContext()),
       })) ?? {};
 
+    if (process.env.NODE_ENV === 'development') {
+      if ('functions' in initialProps) {
+        throw Error(
+          "Initial prop 'functions' is reserved by nicessr. Please use other name.",
+        );
+      }
+    }
+
     const root = page.default(initialProps);
     if (!isFiber(root)) {
       throw Error(`Expected fiber to be rendered, got ${root.toString()}`);
