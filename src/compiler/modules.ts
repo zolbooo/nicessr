@@ -22,6 +22,7 @@ const modules: (isServer: boolean) => webpack.Module = (isServer) => ({
             ],
           ],
           plugins: [
+            '@babel/plugin-transform-runtime',
             [
               '@babel/plugin-transform-react-jsx',
               {
