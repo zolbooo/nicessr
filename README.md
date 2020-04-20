@@ -165,6 +165,22 @@ function Home() {
 export default Home;
 ```
 
+You can import CSS files using `import` statements. They will be rendered as `<link>` tags in the head of page. Example (you should install Bootstrap first: `npm i bootstrap`):
+
+```jsx
+import 'bootstrap/dist/css/bootstrap.min.css';
+
+function Page() {
+  return (
+    <div class="alert alert-primary" role="alert">
+      A simple primary alert—check it out!
+    </div>
+  );
+}
+
+export default Page;
+```
+
 ## Advanced
 
 ### App context
