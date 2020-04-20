@@ -1,7 +1,14 @@
+import path from 'path';
 import webpack from 'webpack';
 
 const modules: (isServer: boolean) => webpack.Module = (isServer) => ({
   rules: [
+    {
+      test: /\.css$/,
+      use: isServer
+        ? path.join(__dirname, 'webpack', 'css-loader')
+        : 'null-loader',
+    },
     {
       test: /\.jsx?$/,
       exclude: /node_modules/,
