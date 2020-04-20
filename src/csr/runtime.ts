@@ -1,6 +1,7 @@
 import { isRef } from '.';
 import { handleError } from './errors';
 import { Fiber, FiberFn } from './jsx/vdom';
+import { functionInvoker } from './functions';
 import { flattenFragments } from './jsx/jsx-runtime';
 import { attachEventHandlers } from './events';
 
@@ -35,8 +36,17 @@ function attachProps(realRoot: Node, virtualRoot: Fiber) {
 export function hydrate(rendererFn: FiberFn) {
   if (typeof document === 'undefined') return;
   try {
+    const initialProps = (window as any).__nicessr_initial_props__;
     const renderedTree = flattenFragments(
-      rendererFn((window as any).__nicessr_initial_props__) as Fiber,
+      rendererFn({
+        ...initialProps,
+        functions: Object.fromEntries(
+          initialProps.functions.map((fnName) => [
+            fnName,
+            functionInvoker(fnName),
+          ]),
+        ),
+      }) as Fiber,
     );
     const hydratedRoot = document.getElementById('__nicessr__root__');
 
