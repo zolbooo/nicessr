@@ -46,6 +46,10 @@ async function bootstrap() {
     '/.nicessr',
     express.static(path.join(process.cwd(), '.nicessr', 'build')),
   );
+  app.use(
+    '/.nicessr/static',
+    express.static(path.join(process.cwd(), '.nicessr', 'static')),
+  );
   app.get('*', async (req, res, next) => {
     const bundle = await bundler.buildOnce(req.path);
     if (bundle === null) return next();
