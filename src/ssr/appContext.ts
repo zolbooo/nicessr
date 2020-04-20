@@ -4,16 +4,20 @@ import { buildPathSSR } from '../compiler';
 import { requireNoCache } from '../utils/require';
 import { appContextBundleRef } from '../compiler/bundler/bundles';
 
+import type { FunctionMap } from './functions/invoke';
+
 export type AppContextData = {
   module: any;
   context: any;
+  functions: { [page: string]: FunctionMap | undefined };
   entrypoint: string | null;
 };
 
 const appContext: AppContextData = {
-  entrypoint: null,
-  context: null,
   module: {},
+  context: null,
+  functions: {},
+  entrypoint: null,
 };
 
 export async function getAppContext(): Promise<any> {
