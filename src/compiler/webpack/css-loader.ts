@@ -4,6 +4,8 @@ import sha256 from 'sha256';
 import { parse, stringify } from 'css';
 import { stringifyRequest } from 'loader-utils';
 
+import { staticAssetsPath } from '..';
+
 function extractPath(importStatement: string) {
   // This is an import in format @import url('some-file.css')
   if (importStatement.startsWith('url('))
@@ -33,7 +35,7 @@ export default function loader(content: Buffer) {
     .join('');
 
   const minifiedCSS = stringify(cssSyntaxTree, { compress: true });
-  const generatedFilename = `${sha256(minifiedCSS)}.css`;
+  const generatedFilename = `${sha256(minifiedCSS).slice(0, 8)}.css`;
 
   if (
     !fs.existsSync(

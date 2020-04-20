@@ -10,7 +10,7 @@ const baseConfig: webpack.Configuration = {
   stats: 'errors-warnings',
   watch: true,
   output: {
-    filename: '[chunkhash].js',
+    filename: '[chunkhash:8].js',
   },
   resolve: {
     alias: {
