@@ -21,6 +21,7 @@ export async function invokeFunction(
     const fn = rawAppContext.functions[shortenURL(req.path)]?.[functionName];
     if (!fn) throw Error('Function not found');
 
+    req.body = req.body.data;
     const result = await fn({ ...rawAppContext.context, req, res });
     res.status(200).send({ status: 'success', data: result });
   } catch (err) {
