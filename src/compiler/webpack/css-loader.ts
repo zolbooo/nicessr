@@ -7,7 +7,7 @@ import { stringifyRequest } from 'loader-utils';
 function extractPath(importStatement: string) {
   // This is an import in format @import url('some-file.css')
   if (importStatement.startsWith('url('))
-    return importStatement.slice('url('.length + 1, -3);
+    return importStatement.slice('url('.length + 1, -2);
   // Import in format @import 'some-file.css'
   return importStatement.slice(1, -1);
 }
