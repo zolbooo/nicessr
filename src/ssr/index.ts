@@ -24,9 +24,9 @@ export async function renderEntrypoint({
   try {
     if (entrypoint.length !== 1) {
       throw Error(
-        `Invariant violation: expected single file as built bundle, got [${entrypoint
-          .map((str) => `'${str}'`)
-          .join(',')}]`,
+        `Invariant violation: expected single file as built bundle, got ${JSON.stringify(
+          entrypoint,
+        )}`,
       );
     }
 
