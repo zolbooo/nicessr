@@ -8,7 +8,7 @@ import { renderStylesheets } from './styles/render';
 
 const pageTemplate = `<!DOCTYPE html>
 <html>
-  <head>{{STYLESHEETS}}</head>
+  <head>{{STYLESHEETS}}{{GLOBAL_STYLES}}</head>
   <body>
     <div id="__nicessr__root__">{{RENDERED_MARKUP}}</div>
     <script>window.__nicessr_initial_props__ = {{INITIAL_PROPS}}</script>
@@ -30,7 +30,7 @@ export async function renderPage(
   ctx: RequestContext,
   bundle: Bundle,
 ): Promise<string> {
-  const { root, initialProps } = await renderEntrypoint({
+  const { root, globalStyles, initialProps } = await renderEntrypoint({
     ctx,
     page: url,
     entrypoint: bundle.ssr,
@@ -53,6 +53,15 @@ export async function renderPage(
   const renderedTree = flattenFragments(root);
   return pageTemplate
     .replace('{{STYLESHEETS}}', renderStylesheets(renderedTree))
+    .replace(
+      '{{GLOBAL_STYLES}}',
+      globalStyles
+        .map(
+          (globalStyle) =>
+            `<link rel="stylesheet" href="/.nicessr/static/${globalStyle}" />`,
+        )
+        .join(''),
+    )
     .replace(
       '{{ENTRYPOINTS}}',
       bundle.client

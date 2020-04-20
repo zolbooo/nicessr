@@ -17,7 +17,8 @@ export async function renderEntrypoint({
   ctx,
   entrypoint,
 }: PageBundleInfo): Promise<
-  { root: Fiber; initialProps: string } | { root: null; initialProps: Error }
+  | { root: Fiber; globalStyles: string[]; initialProps: string }
+  | { root: null; globalStyles: null; initialProps: Error }
 > {
   try {
     if (entrypoint.length !== 1) {
@@ -29,6 +30,8 @@ export async function renderEntrypoint({
     }
 
     globalThis.css = css;
+    const globalStyles = [];
+    globalThis.globalCSS = (style) => globalStyles.push(style);
 
     const pageModule = path.join(buildPathSSR, entrypoint[0]);
     delete require.cache[require.resolve(pageModule)];
@@ -55,10 +58,10 @@ export async function renderEntrypoint({
       throw Error(`Expected fiber to be rendered, got ${root.toString()}`);
     }
 
-    return { root, initialProps: JSON.stringify(initialProps) };
+    return { root, globalStyles, initialProps: JSON.stringify(initialProps) };
   } catch (err) {
     console.error(`⛔️ ${err.message}`);
     console.error(err.stack);
-    return { root: null, initialProps: err };
+    return { root: null, globalStyles: null, initialProps: err };
   }
 }
