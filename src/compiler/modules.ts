@@ -18,7 +18,11 @@ const modules: (isServer: boolean) => webpack.Module = (isServer) => ({
           presets: [
             [
               '@babel/preset-env',
-              { targets: isServer ? { node: '8' } : '>0.25%' },
+              {
+                targets: isServer ? { node: '8' } : '>0.25%',
+                modules: false,
+                loose: true,
+              },
             ],
           ],
           plugins: [

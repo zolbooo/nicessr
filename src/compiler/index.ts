@@ -41,13 +41,14 @@ export const createCompiler = (
           libraryTarget: 'window' as any,
         },
         module: webpackModules(false),
+        target: 'web',
         optimization: {
           splitChunks: { chunks: 'all' },
           runtimeChunk: 'single',
         },
         plugins: [
           new InjectPlugin(
-            () => "require('nicessr/dist/csr/runtime').clientEntrypoint()",
+            () => "require('nicessr/dist/csr/entrypoint').clientEntrypoint()",
             {
               entryOrder: ENTRY_ORDER.First,
             },
