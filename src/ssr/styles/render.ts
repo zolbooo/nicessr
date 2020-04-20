@@ -2,6 +2,7 @@ import { lookupClass } from '../../csr/css/context';
 
 import { CSSReference } from '../../csr/css';
 import { Fiber, FiberNode } from '../../csr/jsx/vdom';
+import { chooseShortestName } from '../../utils/name';
 
 /** Extract all used CSSReference objects in tree */
 export function findUsedClasses(
@@ -37,24 +38,29 @@ export function renderStylesheets(root: Fiber | Fiber[]) {
   // So that we assign short names for them
   const usedClasses = findUsedClasses(root);
 
+  // Long class names mapped to short and unique ones
   const fixedClasses = new Map<string, string>();
   usedClasses.forEach((classRef) => {
-    const stylesheet = lookupClass(classRef.className);
-
-    for (let i = 1; i < classRef.className.length; i += 1) {
-      const shortClassName = classRef.className.slice(0, i);
-      if (!fixedClasses.has(shortClassName)) {
-        fixedClasses.set(
-          shortClassName,
-          stylesheet.replace('__NICESSR__GENERATED_CLASS__', shortClassName),
-        );
-
-        classRef.className = shortClassName;
-        break;
-      }
+    if (!fixedClasses.has(classRef.className)) {
+      fixedClasses.set(
+        classRef.className,
+        chooseShortestName(classRef.className, (name) =>
+          fixedClasses.has(name),
+        ),
+      );
     }
+
+    classRef.className = fixedClasses.get(classRef.className);
   });
 
-  if (fixedClasses.size === 0) return '';
-  return `<style>${Array.from(fixedClasses.values()).join('')}</style>`;
+  return fixedClasses.size === 0
+    ? ''
+    : `<style>${Array.from(fixedClasses.entries())
+        .map(([longName, shortName]) =>
+          lookupClass(longName).replace(
+            '__NICESSR__GENERATED_CLASS__',
+            shortName,
+          ),
+        )
+        .join('')}</style>`;
 }
