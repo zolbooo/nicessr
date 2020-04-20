@@ -44,11 +44,6 @@ export const createCompiler = (
           splitChunks: { chunks: 'all' },
           runtimeChunk: 'single',
         },
-        resolve: {
-          alias: {
-            css: false as any,
-          },
-        },
         plugins: [
           new InjectPlugin(
             () => "require('nicessr/dist/csr/runtime').clientEntrypoint()",
