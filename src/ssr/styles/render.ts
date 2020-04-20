@@ -1,7 +1,7 @@
-import { lookupClass } from '../csr/css/context';
+import { lookupClass } from '../../csr/css/context';
 
-import { CSSReference } from '../csr/css';
-import { Fiber, FiberNode } from '../csr/jsx/vdom';
+import { CSSReference } from '../../csr/css';
+import { Fiber, FiberNode } from '../../csr/jsx/vdom';
 
 /** Extract all used CSSReference objects in tree */
 export function findUsedClasses(
