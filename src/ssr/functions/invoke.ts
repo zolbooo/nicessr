@@ -1,6 +1,7 @@
 import type { Request, Response } from 'express';
 
-import { getAppContext } from '../appContext';
+import { shortenURL } from '../../utils/url';
+import { getRawAppContext } from '../appContext';
 
 export interface FnInvocationContext {
   req: Request;
@@ -13,11 +14,14 @@ export type FunctionMap = {
 export async function invokeFunction(
   req: Request,
   res: Response,
-  fn: (ctx: FnInvocationContext) => Promise<any>,
+  functionName: string,
 ) {
-  const appContext = await getAppContext();
+  const rawAppContext = await getRawAppContext();
   try {
-    const result = await fn({ ...appContext, req, res });
+    const fn = rawAppContext.functions[shortenURL(req.path)]?.[functionName];
+    if (!fn) throw Error('Function not found');
+
+    const result = await fn({ ...rawAppContext.context, req, res });
     res.status(200).send({ status: 'success', data: result });
   } catch (err) {
     res.send({ status: 'error', data: err.message });
