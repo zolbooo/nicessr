@@ -187,7 +187,7 @@ export default Page;
 
 Value returned from `getInitialProps` function will be passed as first argument to page component.
 
-**Warning**: currenly, all `getInitialProps` function exports are removed from client-side bundles.
+**Warning**: currently, all `getInitialProps` function exports are removed from client-side bundles.
 
 There is `appContext` instance passed to `getInitialProps` function. It contains `req`, `res` props:
 express `Request` and `Response` objects. You can also extend it by creating `src/pages/_app.js` file:
@@ -228,12 +228,47 @@ function Home({ items }) {
 export default Home;
 ```
 
+### Server-side functions
+
+You can define server-side functions for your page. They will be passed as `functions` prop to your page component. Example:
+
+```jsx
+// Note that this function will not be available on client side as like getInitialProps.
+export function serverSideFunctions() {
+  // Return object with all functions. They accept application context extended with request and response objects as argument. Return value is sent back to the client.
+  return {
+    add: async ({
+      req: {
+        body: { a, b },
+      },
+    }) => ({ number: a + b }),
+  };
+}
+
+function Home({ functions }) {
+  return (
+    <button
+      click={async () => {
+        console.log(await functions.add({ a: 2, b: 3 }));
+      }}
+    >
+      Click me!
+    </button>
+  );
+}
+
+export default Home;
+```
+
+**Warning**: currenly, all `serverSideFunctions` function exports are removed from client-side bundles.
+
 ### Compilator
 
 There are extra babel plugins ran on builds (check `src/compiler/babel/`):
 
 - `strip-css-on-client`: Removes `css` tagged template literals on client bundle
 - `strip-get-initial-props`: Removes `getInitialProps` exported functions from **all** module on client bundle
+- `strip-server-side-functions`: Similarly to `strip-get-initial-props`, removes all serverSideFunction exported functions
 - `strip-dev-code`: Removes `if (process.env.NODE_ENV === 'development')` statements on production bundle (both SSR and client bundles)
 
 ## Contributing
