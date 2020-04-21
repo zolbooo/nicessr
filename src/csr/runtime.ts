@@ -1,6 +1,6 @@
 import { isRef } from '.';
 import { handleError } from './errors';
-import { Fiber, FiberFn } from './jsx/vdom';
+import { Fiber, FiberFn, isFiber } from './jsx/vdom';
 import { functionInvoker } from './functions';
 import { flattenFragments } from './jsx/jsx-runtime';
 import { attachEventHandlers } from './events';
@@ -21,16 +21,19 @@ function attachProps(realRoot: Node, virtualRoot: Fiber) {
       );
     }
   }
-  if (virtualRoot.elementName === '#text') return;
 
   attachEventHandlers(realRoot, virtualRoot);
 
   if (virtualRoot.props.onMount) {
     effectQueue.push([realRoot, virtualRoot.props.onMount]);
   }
-  (virtualRoot.props.children as Fiber[]).forEach((fiber, i) =>
-    attachProps(realRoot.childNodes[i], fiber),
+
+  const domChildren = Array.from(realRoot.childNodes).filter(
+    (node) => node.nodeName.toLowerCase() !== '#text',
   );
+  (virtualRoot.props.children as Fiber[])
+    .filter((fiber) => isFiber(fiber) && fiber.elementName !== '#text')
+    .forEach((fiber, i) => attachProps(domChildren[i], fiber));
 }
 
 export function hydrate(rendererFn: FiberFn) {
