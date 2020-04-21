@@ -22,7 +22,7 @@ export async function loadEntrypoint(
   if (rawAppContext.functionEntrypoints[shortURL] !== ssrEntrypoint) {
     // Entrypoint has updated, reload functions
     rawAppContext.functionEntrypoints[shortURL] = ssrEntrypoint;
-    rawAppContext.functions[shortURL] = pageModule.serverSideFunctions() ?? {};
+    rawAppContext.functions[shortURL] = pageModule.serverSideFunctions?.() ?? {};
   }
 
   if (typeof pageModule.default !== 'function') {
