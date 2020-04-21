@@ -71,6 +71,7 @@
     "lodash.merge": "^4.6.2",
     "node-fetch": "^2.6.0",
     "null-loader": "^4.0.0",
+    "react-dev-utils": "^10.2.1",
     "rimraf": "^3.0.2",
     "sha256": "^0.2.0",
     "terser-webpack-plugin": "^2.3.5",
