@@ -64,6 +64,10 @@ export function renderFiber(fiber: FiberNode | FiberNode[]): string {
   if (fiber.elementName === 'Fragment') {
     return (fiber.props.children as Fiber[]).map(renderFiber).join('');
   }
+  if (fiber.elementName === 'br') {
+    return '<br>';
+  }
+
   return `<${fiber.elementName}${renderProps(fiber.props)}>${(fiber.props
     .children as FiberNode[])
     .map(renderFiber)
