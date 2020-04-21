@@ -98,6 +98,13 @@ export function h<P = FiberProps>(
     parent: null,
     elementName: element,
   };
+
+  if (process.env.NODE_ENV === 'development') {
+    if ('className' in fiber.props) {
+      throw Error('"className" prop is not used. Use "class" prop instead.');
+    }
+  }
+
   fiber.props.children =
     unpackChildren((props as FiberProps).children)
       .flat(Infinity)
