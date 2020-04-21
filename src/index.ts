@@ -1,5 +1,6 @@
 import path from 'path';
 import express from 'express';
+import { choosePort } from 'react-dev-utils/WebpackDevServerUtils';
 
 import { cleanup } from './utils/cleanup';
 import { renderPage } from './ssr/markup';
@@ -10,7 +11,13 @@ async function bootstrap() {
   const bundler = new Bundler();
   await cleanup();
 
-  const port = Number(process.env.PORT) || 9000;
+  const host = process.env.host || '0.0.0.0';
+  const port = await choosePort(host, parseInt(process.env.PORT, 10) || 9000);
+  if (port === null) {
+    console.error('⛔️\tCannot start development server.');
+    process.exit(1);
+  }
+
   const app = express();
   app.use(express.json());
 
@@ -63,8 +70,8 @@ async function bootstrap() {
 
   app.use(express.static(path.join(process.cwd(), 'public')));
 
-  const server = app.listen(port, '0.0.0.0', () =>
-    console.log(`🚀\tServer running on http://0.0.0.0:${port}`),
+  const server = app.listen(port, host, () =>
+    console.log(`🚀\tServer running on http://${host}:${port}`),
   );
   process.on('SIGINT', () => {
     console.log('\n👾\tExiting gracefully, please wait...');
