@@ -4,6 +4,10 @@ import webpack from 'webpack';
 const modules: (isServer: boolean) => webpack.Module = (isServer) => ({
   rules: [
     {
+      test: /\.(png|jpe?g|gif)$/i,
+      use: path.join(__dirname, 'webpack', 'static-asset-loader'),
+    },
+    {
       test: /\.css$/,
       use: isServer
         ? path.join(__dirname, 'webpack', 'css-loader')

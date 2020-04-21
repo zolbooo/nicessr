@@ -4,8 +4,6 @@ import sha256 from 'sha256';
 import { parse, stringify } from 'css';
 import { stringifyRequest } from 'loader-utils';
 
-import { staticAssetsPath } from '..';
-
 function extractPath(importStatement: string) {
   // This is an import in format @import url('some-file.css')
   if (importStatement.startsWith('url('))
