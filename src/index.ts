@@ -1,6 +1,6 @@
 import path from 'path';
 import express from 'express';
-import { choosePort } from 'react-dev-utils/WebpackDevServerUtils';
+import { prepareUrls, choosePort } from 'react-dev-utils/WebpackDevServerUtils';
 
 import { cleanup } from './utils/cleanup';
 import { renderPage } from './ssr/markup';
@@ -70,9 +70,17 @@ async function bootstrap() {
 
   app.use(express.static(path.join(process.cwd(), 'public')));
 
-  const server = app.listen(port, host, () =>
-    console.log(`🚀\tServer running on http://${host}:${port}`),
-  );
+  const server = app.listen(port, host, () => {
+    const { lanUrlForTerminal, localUrlForTerminal } = prepareUrls(
+      'http',
+      host,
+      port,
+    );
+    console.log('🚀\tServer has started!');
+    console.log(`Local URL: ${localUrlForTerminal}`);
+    console.log(`LAN URL: ${lanUrlForTerminal}`);
+  });
+
   process.on('SIGINT', () => {
     console.log('\n👾\tExiting gracefully, please wait...');
     server.close();
