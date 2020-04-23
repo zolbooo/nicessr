@@ -1,7 +1,7 @@
 import escape from 'escape-html';
 
 import { CSSReference } from '../csr/css';
-import { Fiber, FiberNode, FiberProps } from '../csr/jsx/vdom';
+import { Fiber, FiberNode, FiberProps, voidTags } from '../csr/jsx/vdom';
 
 function renderClass(classRef: string | CSSReference) {
   const className =
@@ -66,6 +66,10 @@ export function renderFiber(fiber: FiberNode | FiberNode[]): string {
   }
   if (fiber.elementName === 'br') {
     return '<br>';
+  }
+
+  if (voidTags.includes(fiber.elementName)) {
+    return `<${fiber.elementName}${renderProps(fiber.props)}>`;
   }
 
   return `<${fiber.elementName}${renderProps(fiber.props)}>${(fiber.props

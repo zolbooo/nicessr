@@ -47,8 +47,8 @@ describe('Fiber renderer', () => {
   });
 
   it('should render boolean props correctly', () => {
-    expect(renderFiber(h('input', { name: 'test', required: true }))).toBe(
-      '<input name="test" required></input>',
+    expect(renderFiber(h('select', { name: 'test', required: true }))).toBe(
+      '<select name="test" required></select>',
     );
   });
 
@@ -60,5 +60,12 @@ describe('Fiber renderer', () => {
 
   it('should escape html entities', () => {
     expect(renderFiber('&<test>')).toBe('&amp;&lt;test&gt;');
+  });
+
+  it('should render void tags properly', () => {
+    expect(renderFiber(h('input', {}))).toBe('<input>');
+    expect(renderFiber(h('img', {}))).toBe('<img>');
+
+    expect(() => renderFiber(h('img', { children: h('div', {}) }))).toThrow();
   });
 });
