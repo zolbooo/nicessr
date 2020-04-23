@@ -1,5 +1,5 @@
 import { isRef } from '.';
-import { handleError } from './errors';
+import { handleError } from './errors.development';
 import { functionInvoker } from './functions';
 import { flattenFragments } from './jsx/jsx-runtime';
 import { attachEventHandlers } from './events';

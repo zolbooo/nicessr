@@ -1,4 +1,4 @@
-import { handleError } from './errors';
+import { handleError } from './errors.development';
 import { hydrate, effectQueue } from './runtime';
 
 export function clientEntrypoint() {
