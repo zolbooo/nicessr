@@ -1,5 +1,5 @@
 import { __fiber, unpackChildren, toFiber } from './utils';
-import { validateStringTag, validateFiber } from './validate.development';
+import { validateFiber, validateStringTag } from './validate.development';
 
 import type { Fiber, FiberFn, FiberProps } from './utils';
 export type { Fiber, FiberNode, FiberFn, FiberProps } from './utils';
@@ -40,7 +40,8 @@ export function h<P = FiberProps>(
       .flat(Infinity)
       .map((child) => {
         if (typeof child === 'object') {
-          return { ...child, parent: fiber };
+          child.parent = fiber;
+          return child;
         }
         return toFiber(child, fiber);
       }) ?? [];
