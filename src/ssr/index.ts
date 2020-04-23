@@ -2,7 +2,7 @@ import path from 'path';
 
 import { css } from '../csr/css';
 import { buildPathSSR } from '../compiler';
-import { Fiber, isFiber } from '../csr/jsx/vdom';
+import { Fiber, isFiber } from '../csr/jsx/utils';
 import { RequestContext } from '../csr';
 
 import { getAppContext } from './appContext';

@@ -55,3 +55,5 @@ export function unpackChildren(
   if (!Array.isArray(children)) return [toFiber(children, null)];
   return children;
 }
+
+export type FiberFn<P = any> = (props: P) => FiberNode;

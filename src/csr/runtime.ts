@@ -1,9 +1,9 @@
 import { isRef } from '.';
 import { handleError } from './errors';
-import { Fiber, FiberFn, isFiber } from './jsx/vdom';
 import { functionInvoker } from './functions';
 import { flattenFragments } from './jsx/jsx-runtime';
 import { attachEventHandlers } from './events';
+import { Fiber, FiberFn, isFiber } from './jsx/utils';
 
 export const effectQueue: [Node, (element: Node) => void][] = [];
 function attachProps(realRoot: Node, virtualRoot: Fiber) {

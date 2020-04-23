@@ -1,11 +1,10 @@
 import { __fiber, unpackChildren, toFiber, isFiber } from './utils';
 
-import type { Fiber, FiberNode, FiberProps } from './utils';
-export type { Fiber, FiberNode, FiberProps } from './utils';
+import type { Fiber, FiberFn, FiberProps } from './utils';
+export type { Fiber, FiberNode, FiberFn, FiberProps } from './utils';
 
 export const voidTags = ['img', 'input'];
 
-export type FiberFn<P = any> = (props: P) => FiberNode;
 export function h<P = FiberProps>(
   element: string | FiberFn<P>,
   props: P | null,
