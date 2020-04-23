@@ -8,7 +8,7 @@ export function checkForNestedForm(fiber: Fiber) {
   let parentFiber: Fiber = fiber.parent;
   while (parentFiber !== null) {
     if (parentFiber.elementName === 'form') {
-      throw Error('Invariant violation: nested parents are not allowed');
+      throw Error('Invariant violation: nested <form> tags are not allowed');
     }
     parentFiber = parentFiber.parent;
   }
