@@ -1,4 +1,5 @@
-import { __fiber, unpackChildren, toFiber, isFiber } from './utils';
+import { __fiber, unpackChildren, toFiber } from './utils';
+import { validateStringTag, validateFiber } from './validate.development';
 
 import type { Fiber, FiberFn, FiberProps } from './utils';
 export type { Fiber, FiberNode, FiberFn, FiberProps } from './utils';
@@ -16,9 +17,7 @@ export function h<P = FiberProps>(
     });
     if (typeof result === 'object') {
       if (process.env.NODE_ENV === 'development') {
-        if (!isFiber(result)) {
-          throw Error(`Invariant violation: expected Fiber, got ${result}`);
-        }
+        validateFiber(result);
       }
       return result;
     }
@@ -26,24 +25,7 @@ export function h<P = FiberProps>(
   }
 
   if (process.env.NODE_ENV === 'development') {
-    if (
-      typeof element !== 'string' ||
-      !/^(Fragment)|[a-z]([a-z0-9-]+)?$/.test(element)
-    )
-      throw Error(
-        `Invariant violation: expected correct element name (alphanumeric charachers or -), got ${element.toString()}`,
-      );
-
-    if (element === 'style') {
-      throw Error('<style> tag is prohibited. Use css`` syntax instead');
-    }
-    if (element === 'script') {
-      throw Error('<script> tag is prohibited');
-    }
-
-    if (voidTags.includes(element) && 'children' in props) {
-      throw Error(`${element} is void tag and cannot have children`);
-    }
+    validateStringTag(element, props);
   }
 
   const fiber: Fiber = {
@@ -53,22 +35,11 @@ export function h<P = FiberProps>(
     elementName: element,
   };
 
-  if (process.env.NODE_ENV === 'development') {
-    if ('className' in fiber.props) {
-      throw Error('"className" prop is not used. Use "class" prop instead.');
-    }
-  }
-
   fiber.props.children =
     unpackChildren((props as FiberProps).children)
       .flat(Infinity)
       .map((child) => {
         if (typeof child === 'object') {
-          if (process.env.NODE_ENV === 'development') {
-            if (!isFiber(child)) {
-              throw Error(`Invariant violation: expected Fiber, got ${child}`);
-            }
-          }
           return { ...child, parent: fiber };
         }
         return toFiber(child, fiber);
