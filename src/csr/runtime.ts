@@ -1,5 +1,7 @@
-import { isRef } from '.';
 import { handleError } from './errors.development';
+import { checkForNestedForm } from './jsx/validate.development';
+
+import { isRef } from '.';
 import { functionInvoker } from './functions';
 import { flattenFragments } from './jsx/jsx-runtime';
 import { attachEventHandlers } from './events';
@@ -8,6 +10,7 @@ import { Fiber, FiberFn, isFiber } from './jsx/utils';
 export const effectQueue: [Node, (element: Node) => void][] = [];
 function attachProps(realRoot: Node, virtualRoot: Fiber) {
   if (process.env.NODE_ENV === 'development') {
+    checkForNestedForm(virtualRoot);
     if (
       realRoot.nodeName.toLowerCase() !== virtualRoot.elementName.toLowerCase()
     ) {
