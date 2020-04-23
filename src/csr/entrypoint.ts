@@ -1,4 +1,6 @@
 import { handleError } from './errors.development';
+import { useAutoReload } from './auto-reload.development';
+
 import { hydrate, effectQueue } from './runtime';
 
 export function clientEntrypoint() {
@@ -6,7 +8,7 @@ export function clientEntrypoint() {
 
   const onLoad = () => {
     if (process.env.NODE_ENV === 'development') {
-      require('./auto-reload').useAutoReload();
+      useAutoReload();
       const ssrError = (window as any).__nicessr_ssr_error__ ?? null;
       if (ssrError) throw Object.assign(new Error(), ssrError);
     }
