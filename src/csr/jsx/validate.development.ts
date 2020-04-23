@@ -2,12 +2,25 @@ import { Fiber, FiberProps, isFiber } from './utils';
 
 const voidTags = ['img', 'input'];
 
+export function checkForNestedForm(fiber: Fiber) {
+  if (fiber.elementName !== 'form') return;
+
+  let parentFiber: Fiber = fiber.parent;
+  while (parentFiber !== null) {
+    if (parentFiber.elementName === 'form') {
+      throw Error('Invariant violation: nested parents are not allowed');
+    }
+    parentFiber = parentFiber.parent;
+  }
+}
+
 export function validateFiber(fiber: Fiber): boolean {
   if (!isFiber(fiber)) {
     throw Error(
       `Invariant violation: expected Fiber, got ${fiber.toString?.() ?? fiber}`,
     );
   }
+
   return true;
 }
 
