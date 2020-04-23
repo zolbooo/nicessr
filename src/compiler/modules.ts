@@ -52,6 +52,14 @@ const modules: (isServer: boolean) => webpack.Module = (isServer) => ({
         },
       },
     },
+    ...(process.env.NODE_ENV === 'production'
+      ? [
+          {
+            test: /\.dev(elopment)?\.js$/,
+            use: 'null-loader',
+          },
+        ]
+      : []),
   ],
 });
 
