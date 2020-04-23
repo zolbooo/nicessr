@@ -12,7 +12,7 @@
   "scripts": {
     "build": "npx tsc",
     "start": "node dist/index.js",
-    "test": "npx jest",
+    "test": "NODE_ENV=development npx jest",
     "dev": "NODE_OPTIONS=--enable-source-maps npx tsc-watch --onSuccess 'npm start'",
     "dev:build": "NODE_OPTIONS=--enable-source-maps npx tsc-watch --onSuccess 'node dist/production/index.js'",
     "dev:serve": "NODE_OPTIONS=--enable-source-maps npx tsc-watch --onSuccess 'node dist/production/serve.js'"
