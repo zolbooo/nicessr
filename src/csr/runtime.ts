@@ -12,7 +12,7 @@ function attachProps(realRoot: Node, virtualRoot: Fiber) {
       realRoot.nodeName.toLowerCase() !== virtualRoot.elementName.toLowerCase()
     ) {
       throw Error(
-        `Invariant violation: invalid tree rendered, ${realRoot.nodeName} on server, ${virtualRoot.elementName} on client`,
+        `Invariant violation: invalid tree rendered, ${realRoot.nodeName} on server, ${virtualRoot.elementName} on client. Please raise issue on github.com/zolbooo/nicessr`,
       );
     }
     if (virtualRoot.props.ref && !isRef(virtualRoot.props.ref)) {
