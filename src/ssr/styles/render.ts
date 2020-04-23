@@ -44,9 +44,9 @@ export function renderStylesheets(root: Fiber | Fiber[]) {
     if (!fixedClasses.has(classRef.className)) {
       fixedClasses.set(
         classRef.className,
-        chooseShortestName(classRef.className, (name) =>
+        `nsr-sc--${chooseShortestName(classRef.className, (name) =>
           fixedClasses.has(name),
-        ),
+        )}`,
       );
     }
 
