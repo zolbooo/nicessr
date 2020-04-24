@@ -8,7 +8,7 @@ import { renderStylesheets } from './styles/render';
 
 const pageTemplate = `<!DOCTYPE html>
 <html>
-  <head>{{STYLESHEETS}}{{GLOBAL_STYLES}}</head>
+  <head><meta name="viewport" content="width=device-width, initial-scale=1">{{STYLESHEETS}}{{GLOBAL_STYLES}}</head>
   <body>
     <div id="__nicessr__root__">{{RENDERED_MARKUP}}</div>
     <script>window.__nicessr_initial_props__ = {{INITIAL_PROPS}}</script>
