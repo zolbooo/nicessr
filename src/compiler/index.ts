@@ -3,8 +3,6 @@ import merge from 'lodash.merge';
 import webpack from 'webpack';
 import nodeExternals from 'webpack-node-externals';
 
-import InjectPlugin, { ENTRY_ORDER } from 'webpack-inject-plugin';
-
 import webpackModules from './modules';
 import webpackBaseConfig from './baseConfig';
 
@@ -38,7 +36,6 @@ export const createCompiler = (
         devtool: isProduction ? false : ('source-map' as any),
         output: {
           path: buildPathClient,
-          libraryTarget: 'window' as any,
         },
         module: webpackModules(false),
         target: 'web',
@@ -46,14 +43,6 @@ export const createCompiler = (
           splitChunks: { chunks: 'all' },
           runtimeChunk: 'single',
         },
-        plugins: [
-          new InjectPlugin(
-            () => "require('nicessr/dist/csr/entrypoint').clientEntrypoint()",
-            {
-              entryOrder: ENTRY_ORDER.First,
-            },
-          ),
-        ],
       },
       webpackBaseConfig,
     ),

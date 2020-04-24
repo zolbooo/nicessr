@@ -21,12 +21,5 @@ export default (isServer) => ({
     ...(process.env.NODE_ENV === 'production'
       ? [require('./strip-dev-code')]
       : []),
-    ...(isServer
-      ? []
-      : [
-          require('./strip-server-side-functions'),
-          require('./strip-get-initial-props'),
-          require('./strip-css-on-client'),
-        ]),
   ],
 });

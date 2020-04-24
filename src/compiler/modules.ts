@@ -31,6 +31,17 @@ const modules: (isServer: boolean) => webpack.Module = (isServer) => ({
           },
         ]
       : []),
+    ...(isServer
+      ? []
+      : [
+          {
+            test: /src\/pages\/.+\.jsx?$/,
+            enforce: 'pre' as any,
+            use: {
+              loader: path.join(__dirname, 'webpack', 'nicessr-loader'),
+            },
+          },
+        ]),
   ],
 });
 

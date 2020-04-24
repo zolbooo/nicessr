@@ -3,7 +3,9 @@ import { useAutoReload } from './auto-reload.development';
 
 import { hydrate, effectQueue } from './runtime';
 
-export function clientEntrypoint() {
+import type { FiberFn } from './jsx/vdom';
+
+export function clientEntrypoint(PageComponent: FiberFn) {
   if (typeof document === 'undefined') return;
 
   const onLoad = () => {
@@ -13,7 +15,7 @@ export function clientEntrypoint() {
       if (ssrError) throw Object.assign(new Error(), ssrError);
     }
 
-    hydrate((window as any).default);
+    hydrate(PageComponent);
     setTimeout(() => {
       effectQueue.forEach(([node, onMount]) => onMount(node));
     }, 0);
