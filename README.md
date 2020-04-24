@@ -187,8 +187,6 @@ export default Page;
 
 Value returned from `getInitialProps` function will be passed as first argument to page component.
 
-**Warning**: currently, all `getInitialProps` function exports are removed from client-side bundles.
-
 There is `appContext` instance passed to `getInitialProps` function. It contains `req`, `res` props:
 express `Request` and `Response` objects. You can also extend it by creating `src/pages/_app.js` file:
 
@@ -260,15 +258,10 @@ function Home({ functions }) {
 export default Home;
 ```
 
-**Warning**: currenly, all `serverSideFunctions` function exports are removed from client-side bundles.
-
 ### Compilator
 
 There are extra babel plugins ran on builds (check `src/compiler/babel/`):
 
-- `strip-css-on-client`: Removes `css` tagged template literals on client bundle
-- `strip-get-initial-props`: Removes `getInitialProps` exported functions from **all** module on client bundle
-- `strip-server-side-functions`: Similarly to `strip-get-initial-props`, removes all serverSideFunction exported functions
 - `strip-dev-code`: Removes `if (process.env.NODE_ENV === 'development')` statements on production bundle (both SSR and client bundles)
 
 ## Contributing
