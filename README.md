@@ -141,6 +141,38 @@ function Home() {
 export default Home;
 ```
 
+There is `useForm` hook for convenient collecting form values. It accepts one argument, `callback`, which will be called with form values object after successful validation. Example:
+
+```jsx
+import { useForm } from 'nicessr';
+
+function FormPage() {
+  const [formRef, handleSubmit] = useForm((values) => {
+    console.log(values); // Possible output: {"name": "123", "link": "https://example.com"}
+  });
+  // Pass formRef and handleSubmit functions to <form> tag
+  <form ref={formRef} submit={handleSubmit}>
+    <div>
+      <label>Name</label>
+      <div>
+        <input name="name" type="text" required />
+      </div>
+    </div>
+    <div>
+      <label>Link</label>
+      <div>
+        <input name="link" type="url" required />
+      </div>
+    </div>
+    <div>
+      <input type="submit" value="Submit" />
+    </div>
+  </form>;
+}
+
+export default FormPage;
+```
+
 You can use css tagged template literal for styles. This will be rendered only on server side, and be included in `<head>` tag of page. Classname will be as short as possible. Also you can pass array to `class` prop of component:
 
 ```jsx
