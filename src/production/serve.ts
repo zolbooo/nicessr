@@ -33,6 +33,11 @@ async function start() {
     '/.nicessr',
     express.static(path.join(process.cwd(), '.nicessr', 'build')),
   );
+  app.use(
+    '/.nicessr/static',
+    express.static(path.join(process.cwd(), '.nicessr', 'static')),
+  );
+
   app.get('*', async (req, res, next) => {
     const bundle = resolvePage(req.path);
     if (bundle === null) return next();
