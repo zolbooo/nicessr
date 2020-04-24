@@ -45,7 +45,9 @@ async function bootstrap() {
       Connection: 'keep-alive',
     });
     res.write('\n');
-    req.on('close', () => bundler.unsubscribe(req.path, handleBuildEvent));
+    req.on('close', () =>
+      bundler.unsubscribe(req.query.page?.toString(), handleBuildEvent),
+    );
   });
 
   app.use(
