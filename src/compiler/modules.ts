@@ -1,6 +1,8 @@
 import path from 'path';
 import webpack from 'webpack';
 
+import babelConfig from './babel/config';
+
 const modules: (isServer: boolean) => webpack.Module = (isServer) => ({
   rules: [
     {
@@ -18,38 +20,7 @@ const modules: (isServer: boolean) => webpack.Module = (isServer) => ({
       exclude: /node_modules/,
       use: {
         loader: 'babel-loader',
-        options: {
-          presets: [
-            [
-              '@babel/preset-env',
-              {
-                targets: isServer ? { node: '8' } : '>0.25%',
-                modules: false,
-                loose: true,
-              },
-            ],
-          ],
-          plugins: [
-            '@babel/plugin-transform-runtime',
-            [
-              '@babel/plugin-transform-react-jsx',
-              {
-                runtime: 'automatic',
-                importSource: 'nicessr/dist/csr/jsx',
-              },
-            ],
-            ...(process.env.NODE_ENV === 'production'
-              ? [require('./babel/strip-dev-code')]
-              : []),
-            ...(isServer
-              ? []
-              : [
-                  require('./babel/strip-server-side-functions'),
-                  require('./babel/strip-get-initial-props'),
-                  require('./babel/strip-css-on-client'),
-                ]),
-          ],
-        },
+        options: babelConfig(isServer),
       },
     },
     ...(process.env.NODE_ENV === 'production'
