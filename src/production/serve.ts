@@ -3,6 +3,7 @@ import express from 'express';
 
 import { renderPage } from '../ssr/markup';
 import { appContextBundleRef } from '../compiler/bundler/bundles';
+import { handleRequest as handleFunctionInvocation } from '../ssr/functions';
 
 async function start() {
   const buildManifest = require(path.join(
@@ -24,7 +25,10 @@ async function start() {
   };
 
   const port = Number(process.env.PORT) || 9000;
+
   const app = express();
+  app.use(express.json());
+
   const server = app.listen(port, '0.0.0.0', () =>
     console.log(`🚀\tServer running on http://0.0.0.0:${port}`),
   );
@@ -45,6 +49,12 @@ async function start() {
     appContextBundleRef.current = bundle.appContext ?? [];
     const markup = await renderPage(req.path, { req, res }, bundle);
     res.status(200).send(markup);
+  });
+  app.post('*', async (req, res, next) => {
+    const bundle = resolvePage(req.path);
+    if (bundle === null) return next();
+
+    handleFunctionInvocation(req, res, bundle);
   });
 
   app.use(express.static(path.join(process.cwd(), 'public')));
