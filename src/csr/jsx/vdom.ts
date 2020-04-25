@@ -4,7 +4,7 @@ import { validateFiber, validateStringTag } from './validate.development';
 import type { Fiber, FiberFn, FiberProps } from './utils';
 export type { Fiber, FiberNode, FiberFn, FiberProps } from './utils';
 
-export { default as voidTags } from './voidTags.json';
+export const voidTags = require('./voidTags.json');
 
 export function h<P = FiberProps>(
   element: string | FiberFn<P>,
