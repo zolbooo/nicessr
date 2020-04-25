@@ -34,9 +34,14 @@ async function exportPages() {
     appContextBundleRef.current = bundle.appContext ?? [];
     const markup = await renderPage(page, null, bundle);
 
-    await fs.promises.mkdir(
-      path.join(...['out', ...page.split(path.sep).slice(0, -1)]),
+    const outputFolder = path.join(
+      ...['out', ...page.split(path.sep).slice(0, -1)],
     );
+    if (!fs.existsSync(outputFolder))
+      await fs.promises.mkdir(
+        path.join(...['out', ...page.split(path.sep).slice(0, -1)]),
+      );
+
     await fs.promises.writeFile(path.join('out', `${page}.html`), markup, {
       encoding: 'utf-8',
     });
