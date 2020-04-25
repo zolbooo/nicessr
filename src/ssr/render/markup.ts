@@ -1,10 +1,10 @@
-import { RequestContext } from '../csr';
-import { flattenFragments } from '../csr/jsx/jsx-runtime';
+import { RequestContext } from '../../csr';
+import { flattenFragments } from '../../csr/jsx/jsx-runtime';
 
-import { Bundle } from '../compiler/bundler';
+import { Bundle } from '../../compiler/bundler';
 import { renderFiber } from './fiber';
-import { renderEntrypoint } from '.';
-import { renderStylesheets } from './styles/render';
+import { renderEntrypoint } from '..';
+import { renderStylesheets } from '../styles/render';
 
 const pageTemplate = `<!DOCTYPE html>
 <html>

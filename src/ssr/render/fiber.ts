@@ -1,7 +1,7 @@
 import escape from 'escape-html';
 
-import { CSSReference } from '../csr/css';
-import { Fiber, FiberNode, FiberProps, voidTags } from '../csr/jsx/vdom';
+import { CSSReference } from '../../csr/css';
+import { Fiber, FiberNode, FiberProps, voidTags } from '../../csr/jsx/vdom';
 
 function renderClass(classRef: string | CSSReference) {
   const className =

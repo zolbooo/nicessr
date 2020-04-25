@@ -1,4 +1,4 @@
-import { h } from '../csr/jsx/vdom';
+import { h } from '../../csr/jsx/vdom';
 
 import { renderFiber } from './fiber';
 

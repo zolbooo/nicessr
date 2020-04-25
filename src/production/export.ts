@@ -5,7 +5,7 @@ import { ncp } from 'ncp';
 
 import type { Bundle } from '../compiler/bundler';
 
-import { renderPage } from '../ssr/markup';
+import { renderPage } from '../ssr/render/markup';
 import { appContextBundleRef } from '../compiler/bundler/bundles';
 import { buildPathClient, staticAssetsPath } from '../compiler';
 

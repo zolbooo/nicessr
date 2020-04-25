@@ -1,7 +1,7 @@
 import path from 'path';
 import express from 'express';
 
-import { renderPage } from '../ssr/markup';
+import { renderPage } from '../ssr/render/markup';
 import { appContextBundleRef } from '../compiler/bundler/bundles';
 import { handleRequest as handleFunctionInvocation } from '../ssr/functions';
 

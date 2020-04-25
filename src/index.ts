@@ -3,7 +3,7 @@ import express from 'express';
 import { prepareUrls, choosePort } from 'react-dev-utils/WebpackDevServerUtils';
 
 import { cleanup } from './utils/cleanup';
-import { renderPage } from './ssr/markup';
+import { renderPage } from './ssr/render/markup';
 import { Bundler, BuildEvent, Bundle } from './compiler/bundler';
 import { handleRequest as handleFunctionInvocation } from './ssr/functions';
 
