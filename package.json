@@ -1,6 +1,6 @@
 {
   "name": "nicessr",
-  "version": "2.7.5",
+  "version": "2.7.6",
   "description": "ES6-based simple framework for SSR",
   "main": "dist/csr/index.js",
   "types": "dist/csr/index.d.ts",
