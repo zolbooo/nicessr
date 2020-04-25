@@ -6,5 +6,6 @@ dist/
 
 .env
 
+out/
 .nicessr/
 src/pages/
