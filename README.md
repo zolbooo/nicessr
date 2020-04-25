@@ -220,6 +220,18 @@ export default Page;
 
 ## Advanced
 
+### dangerouslySetInnerHTML
+
+You can use `dangerouslySetInnerHTML` prop of manual setting HTML for node. **Note**: node with `dangerouslySetInnerHTML` must not have any children.
+
+```jsx
+function Text() {
+  return <p dangerouslySetInnerHTML="Hello!" />;
+}
+
+export default Text;
+```
+
 ### App context
 
 Value returned from `getInitialProps` function will be passed as first argument to page component.
