@@ -10,13 +10,14 @@ import { listFunctions } from './functions';
 import { loadEntrypoint } from './functions/load';
 
 export type PageBundleInfo = {
-  ctx: RequestContext;
+  ctx: RequestContext | null;
   page: string;
   entrypoint: string[];
 };
 
 export async function renderEntrypoint({
   ctx,
+  page: pagePath,
   entrypoint,
 }: PageBundleInfo): Promise<
   | { root: Fiber; globalStyles: string[]; initialProps: string }
@@ -36,7 +37,7 @@ export async function renderEntrypoint({
     globalThis.globalCSS = (style) => globalStyles.push(style);
 
     const page = await loadEntrypoint(
-      ctx.req.path,
+      pagePath,
       path.join(buildPathSSR, entrypoint[0]),
     );
 
@@ -64,7 +65,7 @@ export async function renderEntrypoint({
       globalStyles,
       initialProps: JSON.stringify({
         ...initialProps,
-        functions: await listFunctions(ctx.req.path),
+        functions: await listFunctions(pagePath),
       }),
     };
   } catch (err) {

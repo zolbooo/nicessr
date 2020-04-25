@@ -27,7 +27,7 @@ const pageTemplateWithError = `<!DOCTYPE html>
 
 export async function renderPage(
   url: string,
-  ctx: RequestContext,
+  ctx: RequestContext | null,
   bundle: Bundle,
 ): Promise<string> {
   const { root, globalStyles, initialProps } = await renderEntrypoint({
