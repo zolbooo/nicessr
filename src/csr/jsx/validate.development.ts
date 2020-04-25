@@ -21,10 +21,16 @@ export function validateFiber(fiber: Fiber): boolean {
     );
   }
 
-  if (fiber.props.dangerouslySetInnerHTML && fiber.props.children) {
-    throw Error(
-      'Invariant violation: node with dangerouslySetInnerHTML cannot have children',
-    );
+  if (fiber.props.dangerouslySetInnerHTML) {
+    const hasArrayChildren =
+      Array.isArray(fiber.props.children) && fiber.props.children.length > 0;
+    const isSingleChild =
+      fiber.props.children && !Array.isArray(fiber.props.children);
+
+    if (hasArrayChildren || isSingleChild)
+      throw Error(
+        'Invariant violation: node with dangerouslySetInnerHTML cannot have children',
+      );
   }
 
   if ('className' in fiber.props) {
