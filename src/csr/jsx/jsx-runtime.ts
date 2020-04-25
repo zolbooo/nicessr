@@ -1,8 +1,18 @@
-import { h, Fiber } from './vdom';
+import { h as createVirtualDOMNode, Fiber } from './vdom';
+import { FiberFn, FiberNode, FiberProps } from './utils';
 
-export const jsx = h;
-export const jsxs = h;
+export const jsx = createVirtualDOMNode;
+export const jsxs = createVirtualDOMNode;
 export const Fragment = 'Fragment';
+
+// This legacy JSX transformer plugin entrypoint
+export function h<P = FiberProps>(
+  element: string | FiberFn<P>,
+  props: P | null,
+  ...children: FiberNode[]
+) {
+  return createVirtualDOMNode(element, { ...props, children });
+}
 
 export function flattenFragments(root: Fiber): Fiber | Fiber[] {
   if (root.elementName === '#text') return root;
