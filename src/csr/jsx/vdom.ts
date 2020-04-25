@@ -46,5 +46,9 @@ export function h<P = FiberProps>(
         return toFiber(child, fiber);
       }) ?? [];
 
+  if (process.env.NODE_ENV === 'development') {
+    validateFiber(fiber);
+  }
+
   return fiber;
 }

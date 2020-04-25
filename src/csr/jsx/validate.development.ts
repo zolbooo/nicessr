@@ -27,6 +27,10 @@ export function validateFiber(fiber: Fiber): boolean {
     );
   }
 
+  if ('className' in fiber.props) {
+    throw Error('"className" prop is not used. Use "class" prop instead.');
+  }
+
   return true;
 }
 
@@ -51,10 +55,6 @@ export function validateStringTag(
 
   if (voidTags.includes(elementName) && 'children' in props) {
     throw Error(`${elementName} is void tag and cannot have children`);
-  }
-
-  if ('className' in props) {
-    throw Error('"className" prop is not used. Use "class" prop instead.');
   }
 
   return true;
