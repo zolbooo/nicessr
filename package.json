@@ -71,6 +71,7 @@
     "glob": "^7.1.6",
     "loader-utils": "^2.0.0",
     "lodash.merge": "^4.6.2",
+    "ncp": "^2.0.0",
     "node-fetch": "^2.6.0",
     "null-loader": "^4.0.0",
     "react-dev-utils": "^10.2.1",
