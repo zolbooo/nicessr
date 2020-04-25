@@ -35,7 +35,7 @@ export function findUsedClasses(
 
 const parsedClasses = new Map<string, [string, string]>();
 export function getShortClassName(longName: string) {
-  return parsedClasses.get(longName)[0];
+  return parsedClasses.get(longName)?.[0] ?? longName;
 }
 
 export function renderStylesheets(root: Fiber | Fiber[]) {
