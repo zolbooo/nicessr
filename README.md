@@ -110,7 +110,11 @@ function Home() {
 export default Home;
 ```
 
-In example below, `textRef.current` value was set to `<p>` element during initial render.
+In example below, `textRef.current` value was set to `<p>` element during initial render. You can also use ref callback:
+
+```jsx
+<p ref={node => { /* Do something */ }}>
+```
 
 You can include css in your components! Example:
 
@@ -304,3 +308,23 @@ Check `CONTRIBUTING.md`
 ## Under the hood
 
 Webpack is used internally for build (check out `src/compiler/index.ts`). Pages are built on-demand (only when are requested, look at `src/compiler/bundler/entrypoints.ts`), called on server-side using dynamic `require` (check out `src/ssr/index.ts`).
+
+### Lifecycle
+
+- Init function for app context is called in `_app.js`
+
+- Page component is being imported on server
+
+- `getInitialProps` and `serverSideFunctions` are called on server
+
+- `default` export of page module is being called on server
+
+- Fibers are rendered to string and final markup is being sent to the client
+
+- Hydration is being performed on `default` export of page component
+
+- `Ref`s are being attached to corresponding DOM nodes
+
+- Event listeners are being attached to DOM nodes
+
+- `onMount` hooks are being called from queue
