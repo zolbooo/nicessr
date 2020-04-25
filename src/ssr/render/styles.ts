@@ -55,12 +55,12 @@ export function renderStylesheets(root: Fiber | Fiber[]) {
 
   return fixedClasses.size === 0
     ? ''
-    : `<style>${Array.from(fixedClasses.entries())
+    : Array.from(fixedClasses.entries())
         .map(([longName, shortName]) =>
           lookupClass(longName).replace(
             '__NICESSR__GENERATED_CLASS__',
             shortName,
           ),
         )
-        .join('')}</style>`;
+        .join('');
 }
