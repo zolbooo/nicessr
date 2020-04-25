@@ -20,6 +20,10 @@ args
     },
     ['b'],
   )
+  .command('export', 'Export static assets and markup', () => {
+    process.env.NODE_ENV = 'production';
+    require('./dist/production/export');
+  })
   .command('serve', 'Start production server', () => {
     process.env.NODE_ENV = 'production';
     require('./dist/production/serve');

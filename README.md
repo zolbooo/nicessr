@@ -26,6 +26,7 @@ Simple server-side-rendering framework for static HTML generation. It lets you r
 - `start`: Start development server with auto reloading
 - `build`: Build production bundle
 - `serve`: Serve production bundle (**note**: You should run `build` command before `serve`)
+- `export`: Export static HTML and other assets (**note**: If you use app context, there will not be `req` and `res` props)
 
 ### Examples
 
