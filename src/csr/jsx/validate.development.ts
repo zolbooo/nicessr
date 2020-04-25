@@ -1,6 +1,5 @@
+import voidTags from './voidTags.json';
 import { Fiber, FiberProps, isFiber } from './utils';
-
-const voidTags = ['img', 'input'];
 
 export function checkForNestedForm(fiber: Fiber) {
   if (fiber.elementName !== 'form') return;
