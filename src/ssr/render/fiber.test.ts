@@ -68,4 +68,14 @@ describe('Fiber renderer', () => {
 
     expect(() => renderFiber(h('img', { children: h('div', {}) }))).toThrow();
   });
+
+  it('should render dangerouslySetInnerHTML prop', () => {
+    expect(renderFiber(h('div', { dangerouslySetInnerHTML: '<p></p>' }))).toBe(
+      '<div><p></p></div>',
+    );
+
+    expect(() =>
+      h('div', { dangerouslySetInnerHTML: '<p></p>', children: '1' }),
+    ).toThrowError();
+  });
 });

@@ -29,6 +29,7 @@ function renderClass(classRef: string | CSSReference) {
 
 function renderProps({
   children,
+  dangerouslySetInnerHTML,
   class: className,
   ...props
 }: FiberProps): string {
@@ -54,6 +55,13 @@ function renderProps({
   return propsString ? ` ${propsString}` : '';
 }
 
+function renderChildren(fiber: Fiber): string {
+  if (fiber.props.dangerouslySetInnerHTML)
+    return fiber.props.dangerouslySetInnerHTML;
+  // eslint-disable-next-line
+  return (fiber.props.children as FiberNode[])?.map(renderFiber).join('') ?? '';
+}
+
 export function renderFiber(fiber: FiberNode | FiberNode[]): string {
   if (Array.isArray(fiber)) return fiber.map(renderFiber).join('');
   if (typeof fiber !== 'object') return escape(fiber.toString());
@@ -72,8 +80,7 @@ export function renderFiber(fiber: FiberNode | FiberNode[]): string {
     return `<${fiber.elementName}${renderProps(fiber.props)}>`;
   }
 
-  return `<${fiber.elementName}${renderProps(fiber.props)}>${(fiber.props
-    .children as FiberNode[])
-    .map(renderFiber)
-    .join('')}</${fiber.elementName}>`;
+  return `<${fiber.elementName}${renderProps(fiber.props)}>${renderChildren(
+    fiber,
+  )}</${fiber.elementName}>`;
 }
