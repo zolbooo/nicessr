@@ -1,7 +1,9 @@
 import { __fiber, unpackChildren, toFiber } from './utils';
+
+import { pop, push, createErrorHandler } from './stack.development';
 import { validateFiber, validateStringTag } from './validate.development';
 
-import type { Fiber, FiberFn, FiberProps } from './utils';
+import type { Fiber, FiberNode, FiberFn, FiberProps } from './utils';
 export type { Fiber, FiberNode, FiberFn, FiberProps } from './utils';
 
 export const voidTags = require('./voidTags.json');
@@ -11,13 +13,38 @@ export function h<P = FiberProps>(
   props: P | null,
 ): Fiber {
   if (typeof element === 'function') {
-    const result = element({
-      ...props,
-      children: unpackChildren((props as FiberProps)?.children),
-    });
+    let result: FiberNode;
+    let errHandler: (err: Error) => void;
+
+    if (process.env.NODE_ENV === 'development') {
+      push(element);
+      errHandler = createErrorHandler();
+      try {
+        result = element({
+          ...props,
+          children: unpackChildren((props as FiberProps)?.children),
+        });
+      } catch (err) {
+        errHandler(err);
+      }
+    }
+
+    if (process.env.NODE_ENV !== 'development') {
+      result = element({
+        ...props,
+        children: unpackChildren((props as FiberProps)?.children),
+      });
+    }
+
     if (typeof result === 'object') {
       if (process.env.NODE_ENV === 'development') {
-        validateFiber(result);
+        result.$$errorHandler = errHandler;
+        try {
+          validateFiber(result);
+        } catch (err) {
+          errHandler(err);
+        }
+        pop();
       }
       return result;
     }
@@ -39,11 +66,30 @@ export function h<P = FiberProps>(
     unpackChildren((props as FiberProps)?.children ?? [])
       .flat(Infinity)
       .map((child) => {
-        if (typeof child === 'object') {
-          child.parent = fiber;
-          return child;
+        const childFiber: Fiber =
+          typeof child === 'object'
+            ? Object.assign(child, { parent: fiber })
+            : toFiber(child, fiber);
+
+        if (process.env.NODE_ENV === 'development') {
+          if (!childFiber.$$errorHandler) {
+            childFiber.$$errorHandler = (err: Error) => {
+              let currentNode = childFiber.parent;
+              while (currentNode !== null) {
+                if (currentNode.$$errorHandler) {
+                  currentNode.$$errorHandler(err);
+                  return;
+                }
+                currentNode = currentNode.parent;
+              }
+              throw Error(
+                'Invariant violation: there is no fiber with error handler. Please report issue on https://github.com/zolbooo/nicessr',
+              );
+            };
+          }
         }
-        return toFiber(child, fiber);
+
+        return childFiber;
       }) ?? [];
 
   if (process.env.NODE_ENV === 'development') {

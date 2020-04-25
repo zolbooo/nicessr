@@ -1,6 +1,7 @@
 import { handleError } from './errors.development';
 import { checkForNestedForm } from './jsx/validate.development';
 
+import { h } from './jsx/vdom';
 import { isRef } from '.';
 import { functionInvoker } from './functions';
 import { flattenFragments } from './jsx/jsx-runtime';
@@ -29,11 +30,27 @@ function attachProps(realRoot: Node, virtualRoot: Fiber) {
     }
   }
 
-  attachEventHandlers(realRoot, virtualRoot);
-
   if (virtualRoot.props.onMount) {
-    effectQueue.push([realRoot, virtualRoot.props.onMount]);
+    const { onMount } = virtualRoot.props;
+    let mountHandler = onMount;
+
+    if (process.env.NODE_ENV === 'development') {
+      mountHandler = (node) => {
+        try {
+          const result: any = onMount(node);
+          if (typeof result?.catch === 'function')
+            result.catch((err) => virtualRoot.$$errorHandler(err));
+        } catch (err) {
+          virtualRoot.$$errorHandler(err);
+        }
+      };
+    }
+
+    effectQueue.push([realRoot, mountHandler]);
+    delete virtualRoot.props.onMount;
   }
+
+  attachEventHandlers(realRoot, virtualRoot);
 
   const domChildren = Array.from(realRoot.childNodes).filter(
     (node) => node.nodeName.toLowerCase() !== '#text',
@@ -50,7 +67,7 @@ export function hydrate(rendererFn: FiberFn) {
       document.getElementById('__nicessr_initial_props__')?.innerHTML ?? 'null',
     );
     const renderedTree = flattenFragments(
-      rendererFn({
+      h(rendererFn, {
         ...initialProps,
         functions: Object.fromEntries(
           initialProps.functions.map((fnName) => [
@@ -58,7 +75,7 @@ export function hydrate(rendererFn: FiberFn) {
             functionInvoker(fnName),
           ]),
         ),
-      }) as Fiber,
+      }),
     );
     const hydratedRoot = document.getElementById('__nicessr__root__');
 

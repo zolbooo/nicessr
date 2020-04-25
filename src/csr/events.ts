@@ -34,17 +34,24 @@ export function attachEventHandlers(realRoot: Node, virtualRoot: Fiber) {
       }
 
       if (typeof value !== 'function') return;
-      if (key !== 'onMount') {
-        if (process.env.NODE_ENV === 'development') {
-          if (!isSupportedEvent(key)) {
-            throw Error(
-              `Unsupported event is being attached to element: ${key}`,
-            );
-          }
-        }
 
-        realRoot.addEventListener(key, value as () => void);
+      let eventHandler = value;
+      if (process.env.NODE_ENV === 'development') {
+        if (!isSupportedEvent(key)) {
+          throw Error(`Unsupported event is being attached to element: ${key}`);
+        }
+        eventHandler = (event) => {
+          try {
+            value(event)?.catch?.((err) => {
+              virtualRoot.$$errorHandler(err);
+            });
+          } catch (err) {
+            virtualRoot.$$errorHandler(err);
+          }
+        };
       }
+
+      realRoot.addEventListener(key, eventHandler as any);
     },
   );
 }

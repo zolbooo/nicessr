@@ -17,6 +17,7 @@ export type Fiber = {
   props: FiberProps;
   parent: Fiber | null;
   elementName: '#text' | 'Fragment' | string;
+  $$errorHandler?: (err: Error) => void;
 };
 
 export function isFiber(node: FiberNode) {
