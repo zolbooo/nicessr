@@ -26,7 +26,7 @@ const productionCompiler = ({ ssr, client }) =>
         },
         module: webpackModules(true),
         target: 'node',
-        externals: [nodeExternals()],
+        externals: [nodeExternals({ whitelist: [/\.css$/] })],
         plugins: [new webpack.ProgressPlugin()],
       },
       webpackBaseConfig,
