@@ -4,7 +4,7 @@ import { CSSReference } from '../css';
 export const __fiber = 'NicessrFiber';
 
 export type FiberProps<RefType = any> = {
-  ref?: Ref<RefType>;
+  ref?: Ref<RefType> | ((node: RefType) => void);
   class?: string | CSSReference | (string | CSSReference)[];
   children?: FiberNode | FiberNode[];
   onMount?: (node: Node) => void;

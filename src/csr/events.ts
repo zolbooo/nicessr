@@ -28,7 +28,10 @@ function isSupportedEvent(eventName: string) {
 export function attachEventHandlers(realRoot: Node, virtualRoot: Fiber) {
   Object.entries(virtualRoot.props as any).forEach(
     ([key, value]: [string, Function | Ref<typeof realRoot>]) => {
-      if (key === 'ref') (value as Ref<typeof realRoot>).current = realRoot;
+      if (key === 'ref') {
+        if (typeof value === 'function') value(realRoot);
+        else (value as Ref<typeof realRoot>).current = realRoot;
+      }
 
       if (typeof value !== 'function') return;
       if (key !== 'onMount') {

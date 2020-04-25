@@ -18,10 +18,14 @@ function attachProps(realRoot: Node, virtualRoot: Fiber) {
         `Invariant violation: invalid tree rendered, ${realRoot.nodeName} on server, ${virtualRoot.elementName} on client. Please raise issue on github.com/zolbooo/nicessr`,
       );
     }
-    if (virtualRoot.props.ref && !isRef(virtualRoot.props.ref)) {
-      throw Error(
-        'Invariant violation: invalid ref passed, use ref created by useRef function',
-      );
+    if (virtualRoot.props.ref) {
+      if (
+        typeof virtualRoot.props.ref !== 'function' &&
+        !isRef(virtualRoot.props.ref)
+      )
+        throw Error(
+          'Invariant violation: invalid ref passed, use ref created by useRef function',
+        );
     }
   }
 
