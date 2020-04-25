@@ -11,7 +11,10 @@ export function clientEntrypoint(PageComponent: FiberFn) {
   const onLoad = () => {
     if (process.env.NODE_ENV === 'development') {
       useAutoReload();
-      const ssrError = (window as any).__nicessr_ssr_error__ ?? null;
+      const ssrError =
+        JSON.parse(
+          document.getElementById('__nicessr_ssr_error__')?.innerHTML ?? 'null',
+        ) ?? null;
       if (ssrError) throw Object.assign(new Error(), ssrError);
     }
 

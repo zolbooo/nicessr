@@ -46,7 +46,9 @@ function attachProps(realRoot: Node, virtualRoot: Fiber) {
 export function hydrate(rendererFn: FiberFn) {
   if (typeof document === 'undefined') return;
   try {
-    const initialProps = (window as any).__nicessr_initial_props__;
+    const initialProps = JSON.parse(
+      document.getElementById('__nicessr_initial_props__')?.innerHTML ?? 'null',
+    );
     const renderedTree = flattenFragments(
       rendererFn({
         ...initialProps,
