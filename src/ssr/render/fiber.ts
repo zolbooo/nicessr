@@ -1,7 +1,10 @@
 import escape from 'escape-html';
 
-import { CSSReference } from '../../csr/css';
-import { Fiber, FiberNode, FiberProps, voidTags } from '../../csr/jsx/vdom';
+import type { CSSReference } from '../../csr/css';
+import type { Fiber, FiberNode, FiberProps } from '../../csr/jsx/vdom';
+
+import { voidTags } from '../../csr/jsx/vdom';
+import { getShortClassName } from './styles';
 
 function renderClass(classRef: string | CSSReference) {
   const className =
@@ -24,7 +27,7 @@ function renderClass(classRef: string | CSSReference) {
     );
   }
 
-  return className;
+  return getShortClassName(className);
 }
 
 function renderProps({
