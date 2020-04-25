@@ -1,4 +1,5 @@
 import * as t from '@babel/types';
+import sha256 from 'sha256';
 import traverse from '@babel/traverse';
 import generator from '@babel/generator';
 import { parse } from '@babel/parser';
@@ -48,6 +49,7 @@ export default function loader(source: string) {
   traverse(ast, {
     TaggedTemplateExpression(path) {
       if (t.isIdentifier(path.node.tag) && path.node.tag.name === 'css') {
+        path.addComment('leading', `css: ${sha256(generator(path.node).code)}`);
         path.replaceWith(t.nullLiteral());
       }
     },
