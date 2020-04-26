@@ -64,6 +64,7 @@ export function h<P = FiberProps>(
 
   fiber.props.children =
     unpackChildren((props as FiberProps)?.children ?? [])
+      .filter((child) => child !== null && child !== false)
       .flat(Infinity)
       .map((child) => {
         const childFiber: Fiber =
