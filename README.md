@@ -116,6 +116,23 @@ In example below, `textRef.current` value was set to `<p>` element during initia
 <p ref={node => { /* Do something */ }}>
 ```
 
+You can add `<head>` tag to your page. Example:
+
+```jsx
+function HomePage() {
+  return (
+    <>
+      <head>
+        <title>My home page</title>
+      </head>
+      <p>This is home page!</p>
+    </>
+  );
+}
+
+export default HomePage;
+```
+
 You can include css in your components! Example:
 
 ```jsx
