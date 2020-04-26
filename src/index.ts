@@ -1,5 +1,6 @@
 import path from 'path';
 import express from 'express';
+import cookieParser from 'cookie-parser';
 import { prepareUrls, choosePort } from 'react-dev-utils/WebpackDevServerUtils';
 
 import { cleanup } from './utils/cleanup';
@@ -20,6 +21,7 @@ async function bootstrap() {
 
   const app = express();
   app.use(express.json());
+  app.use(cookieParser());
 
   app.use('/.nicessr/auto-refresh', (req, res) => {
     let newBundle: Partial<Bundle> = {

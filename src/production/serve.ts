@@ -1,5 +1,6 @@
 import path from 'path';
 import express from 'express';
+import cookieParser from 'cookie-parser';
 
 import { renderPage } from '../ssr/render/markup';
 import { appContextBundleRef } from '../compiler/bundler/bundles';
@@ -28,6 +29,7 @@ async function start() {
 
   const app = express();
   app.use(express.json());
+  app.use(cookieParser());
 
   const server = app.listen(port, '0.0.0.0', () =>
     console.log(`🚀\tServer running on http://0.0.0.0:${port}`),
