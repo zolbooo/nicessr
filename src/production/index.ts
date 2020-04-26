@@ -40,7 +40,17 @@ const productionCompiler = ({ ssr, client }) =>
         },
         module: webpackModules(false),
         optimization: {
-          splitChunks: { chunks: 'all' },
+          splitChunks: {
+            chunks: 'all',
+            cacheGroups: {
+              vendor: {
+                chunks: 'initial',
+                name: 'vendor',
+                test: /node_modules/,
+                enforce: true,
+              },
+            },
+          },
           runtimeChunk: 'single',
         },
         resolve: {
