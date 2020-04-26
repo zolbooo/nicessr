@@ -55,7 +55,7 @@ export async function renderEntrypoint({
       }
     }
 
-    const root = page.default(initialProps);
+    const root = page.default({ ...initialProps, functions: {} });
     if (!isFiber(root)) {
       throw Error(`Expected fiber to be rendered, got ${root.toString()}`);
     }
