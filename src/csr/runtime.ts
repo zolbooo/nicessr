@@ -10,13 +10,15 @@ import { Fiber, FiberFn, isFiber } from './jsx/utils';
 
 export const effectQueue: [Node, (element: Node) => void][] = [];
 function attachProps(realRoot: Node, virtualRoot: Fiber) {
+  if (virtualRoot.elementName === 'head') return;
+
   if (process.env.NODE_ENV === 'development') {
     checkForNestedForm(virtualRoot);
     if (
       realRoot.nodeName.toLowerCase() !== virtualRoot.elementName.toLowerCase()
     ) {
       throw Error(
-        `Invariant violation: invalid tree rendered, ${realRoot.nodeName} on server, ${virtualRoot.elementName} on client. Please raise issue on github.com/zolbooo/nicessr`,
+        `Invariant violation: invalid tree rendered, ${realRoot.nodeName.toLowerCase()} on server, ${virtualRoot.elementName.toLowerCase()} on client. Please raise the issue on https://github.com/zolbooo/nicessr`,
       );
     }
     if (virtualRoot.props.ref) {
