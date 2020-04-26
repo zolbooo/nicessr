@@ -21,5 +21,6 @@ export default (isServer) => ({
     ...(process.env.NODE_ENV === 'production'
       ? [require('./strip-dev-code')]
       : []),
+    ...(isServer ? [] : [require('./strip-css')]),
   ],
 });
