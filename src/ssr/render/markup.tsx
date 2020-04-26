@@ -6,6 +6,7 @@ import { renderFiber } from './fiber';
 import { renderEntrypoint } from '..';
 import { renderStylesheets } from './styles';
 import { pageTemplate, pageTemplateWithError } from './templates';
+import { extractHeadChildren } from './head';
 
 export async function renderPage(
   url: string,
@@ -29,12 +30,15 @@ export async function renderPage(
   }
 
   const renderedTree = flattenFragments(root);
+  const headChildren = extractHeadChildren(root);
+
   const stylesheets = renderStylesheets(renderedTree);
   const renderedMarkup = renderFiber(renderedTree);
 
   const pageFiber = pageTemplate({
     styles,
     stylesheets,
+    headChildren,
     initialProps,
     renderedMarkup,
     entrypoints: bundle.client,

@@ -4,6 +4,7 @@ import { h } from '../../csr/jsx/jsx-runtime';
 export const pageTemplate = ({
   renderedMarkup,
   initialProps,
+  headChildren,
   entrypoints,
   stylesheets,
   styles,
@@ -11,6 +12,7 @@ export const pageTemplate = ({
   <html>
     <head>
       <meta name="viewport" content="width=device-width, initial-scale=1" />
+      {headChildren}
       <style dangerouslySetInnerHTML={stylesheets} />
       {styles.map((style) => (
         <link rel="stylesheet" href={`/.nicessr/static/${style}`} />
